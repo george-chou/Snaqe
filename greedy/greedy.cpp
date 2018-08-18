@@ -69,9 +69,6 @@ void Greedy::setupUi(QMainWindow *greedyClass)
 	MessageLabel->setFont(font);
 	MessageLabel->setTextFormat(Qt::AutoText);
 	greedyClass->setCentralWidget(centralWidget);
-	statusBar = new QStatusBar(greedyClass);
-	statusBar->setObjectName(QStringLiteral("statusBar"));
-	greedyClass->setStatusBar(statusBar);
 
 	refresh = new QTimer;
 
