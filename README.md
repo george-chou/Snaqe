@@ -30,7 +30,7 @@ Download available at <https://github.com/zigzagbob/Gluttonous-Snake/releases>.
 
 ![GPL-v3](https://www.gnu.org/graphics/gplv3-127x51.png)
 
-[Flat icon set](https://www.easyicon.net/1186148-Snake_icon.html) from [graphicex](https://www.easyicon.net/).
+[Flat icon set](https://www.easyicon.net/1186148-Snake_icon.html) from [easyicon](https://www.easyicon.net/).
 
 All source codes are licensed under [GPL-3.0](https://opensource.org/licenses/GPL-3.0).
 
