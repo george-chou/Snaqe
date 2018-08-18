@@ -21,8 +21,6 @@ public:
 	QLabel *LengthLabel;
 	QLabel *ScoreLabel;
 	QLabel *MessageLabel;
-	QStatusBar *statusBar;
-
 	QTimer *refresh;
 
 private:
