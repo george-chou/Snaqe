@@ -3,7 +3,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include<QTimer>
-#include "ui_gluttonous.h"
+//#include "ui_gluttonous.h"
 
 class Gluttonous : public QMainWindow
 {
@@ -23,7 +23,7 @@ public:
 	QTimer *refresh;
 
 private:
-	Ui::GluttonousClass ui;
+	//Ui::GluttonousClass ui;
 
 	void setupUi(QMainWindow *MainWindow);
 	void retranslateUi(QMainWindow *MainWindow);
