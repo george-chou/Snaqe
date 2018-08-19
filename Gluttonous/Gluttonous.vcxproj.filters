@@ -46,9 +46,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_gluttonous.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_gluttonous.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -79,9 +76,6 @@
   <ItemGroup>
     <CustomBuild Include="gluttonous.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="gluttonous.qrc">
-      <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="GLWidget.h">
       <Filter>Header Files</Filter>
