@@ -1,3 +1,5 @@
+#include <QtWidgets>
+
 #define C_WHITE 1.0
 #define C_RED 0.0
 
@@ -22,4 +24,3 @@ extern body Sn[Res * Res];
 
 extern int max(int x, int y);
 extern int max_4(int a, int b, int c, int d);
- 

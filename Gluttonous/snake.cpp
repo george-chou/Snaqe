@@ -1,4 +1,4 @@
-#include "global.h"
+#include "stdafx.h"
 #include "snake.h"
 
 

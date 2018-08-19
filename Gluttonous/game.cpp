@@ -1,4 +1,4 @@
-#include "global.h"
+#include "stdafx.h"
 #include "game.h"
 #include "stdlib.h"
 #include "time.h"

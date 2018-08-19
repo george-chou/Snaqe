@@ -1,8 +1,8 @@
-#include "global.h"
- 
+#include "stdafx.h"
+
 int  L_x, L_y, F_x, F_y, v, N, Snake_Length;
 bool GameOver, Pause;
-body Sn[Res * Res]; 
+body Sn[Res * Res];
 
 int max(int x, int y){
 	return (x > y) ? x : y;

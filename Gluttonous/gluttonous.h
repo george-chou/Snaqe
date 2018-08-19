@@ -1,18 +1,17 @@
-#ifndef GREEDY_H
-#define GREEDY_H
+#ifndef GLUTTONOUS_H
+#define GLUTTONOUS_H
 
 #include <QtWidgets/QMainWindow>
 #include<QTimer>
-#include "ui_greedy.h"
+#include "ui_gluttonous.h"
 
-
-class Greedy : public QMainWindow
+class Gluttonous : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	Greedy(QWidget *parent = 0);
-	~Greedy();
+	Gluttonous(QWidget *parent = 0);
+	~Gluttonous();
 
 	QWidget *centralWidget;
 	QLabel *Score;
@@ -24,7 +23,7 @@ public:
 	QTimer *refresh;
 
 private:
-	Ui::greedyClass ui;
+	Ui::GluttonousClass ui;
 
 	void setupUi(QMainWindow *MainWindow);
 	void retranslateUi(QMainWindow *MainWindow);
@@ -38,7 +37,6 @@ public slots:
 	void GameResume(void);
 	void GamePause(void);
 	void Win(void);
-
 };
 
-#endif // GREEDY_H
+#endif // GLUTTONOUS_H

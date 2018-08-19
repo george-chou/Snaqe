@@ -1,19 +1,21 @@
-#include "greedy.h"
-#include "GLWidget.h" 
+#include "stdafx.h"
+#include "gluttonous.h"
+#include "GLWidget.h"
 
-Greedy::Greedy(QWidget *parent)
-: QMainWindow(parent)
+Gluttonous::Gluttonous(QWidget *parent)
+	: QMainWindow(parent)
 {
+	//ui.setupUi(this);
 	setupUi(this);
-
 }
 
-Greedy::~Greedy()
+Gluttonous::~Gluttonous()
 {
 
 }
 
-void Greedy::setupUi(QMainWindow *greedyClass)
+
+void Gluttonous::setupUi(QMainWindow *greedyClass)
 {
 	if (greedyClass->objectName().isEmpty())
 		greedyClass->setObjectName(QStringLiteral("greedyClass"));
@@ -88,12 +90,12 @@ void Greedy::setupUi(QMainWindow *greedyClass)
 	QObject::connect(openGLWidget, SIGNAL(Wasted()), refresh, SLOT(stop()));
 	QObject::connect(openGLWidget, SIGNAL(GameStart()), refresh, SLOT(start()));
 	QObject::connect(openGLWidget, SIGNAL(ResumeGame()), refresh, SLOT(start()));
-	QObject::connect(openGLWidget, SIGNAL(PauseGame()), refresh, SLOT(stop())); 
+	QObject::connect(openGLWidget, SIGNAL(PauseGame()), refresh, SLOT(stop()));
 
 	QMetaObject::connectSlotsByName(greedyClass);
 } // setupUi
 
-void Greedy::retranslateUi(QMainWindow *greedyClass)
+void Gluttonous::retranslateUi(QMainWindow *greedyClass)
 {
 	greedyClass->setWindowFlags(this->windowFlags()&~Qt::WindowMaximizeButtonHint);
 	greedyClass->setWindowTitle(QApplication::translate("greedyClass", "Gluttonous Snake", 0));
@@ -105,42 +107,40 @@ void Greedy::retranslateUi(QMainWindow *greedyClass)
 	refresh->setInterval(100);
 }
 
-void Greedy::PrintScore(int l)
+void Gluttonous::PrintScore(int l)
 {
 	int s = (l - 2) * 50;
 	Score->setText(QString::number(s));
 }
 
-void Greedy::PrintLength(int l)
+void Gluttonous::PrintLength(int l)
 {
 	Length->setText(QString::number(l));
 }
 
-void Greedy::ResetGame()
+void Gluttonous::ResetGame()
 {
 	Score->setNum(0);
 	Length->setNum(2);
 	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to pause.", 0));
 }
 
-void Greedy::RestartGame()
+void Gluttonous::RestartGame()
 {
 	MessageLabel->setText(QApplication::translate("greedyClass", "Game over! Press [Space] to replay.", 0));
 }
 
-void Greedy::GameResume()
+void Gluttonous::GameResume()
 {
 	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to pause.", 0));
 }
 
-void Greedy::GamePause()
+void Gluttonous::GamePause()
 {
 	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to resume.", 0));
 }
 
-void Greedy::Win()
+void Gluttonous::Win()
 {
 	MessageLabel->setText(QApplication::translate("greedyClass", "Congratulations! Press [Space] to replay.", 0));
 }
-
-

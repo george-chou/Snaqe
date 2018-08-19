@@ -1,11 +1,10 @@
-//#include<gl/glut.h>
+#include "stdafx.h" 
+
 #include<QVector3D>
 #include<QDebug>
 #include<QPoint>
 #include<qmath.h>
 #include<QKeyEvent> 
-
-#include "global.h" 
 #include "GLWidget.h"  
 
  
