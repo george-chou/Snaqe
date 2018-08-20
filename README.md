@@ -18,7 +18,7 @@ Download available at <https://github.com/zigzagbob/Snaqe/releases>.
 
 ## Pre-installed software ##
 
-### Static ###
+### Static compiler ###
 
 The source of static compiler:
 
@@ -28,7 +28,7 @@ The tutorial of building static compiler:
 
 <http://zerois.me/id-36.html>(in Chinese)
 
-### Dynamic ###
+### Dynamic compiler ###
 
 The installation package of dynamic compiler:
 
