@@ -98,7 +98,7 @@ void Gluttonous::setupUi(QMainWindow *greedyClass)
 void Gluttonous::retranslateUi(QMainWindow *greedyClass)
 {
 	greedyClass->setWindowFlags(this->windowFlags()&~Qt::WindowMaximizeButtonHint);
-	greedyClass->setWindowTitle(QApplication::translate("greedyClass", "Gluttonous Snake", 0));
+	greedyClass->setWindowTitle(QApplication::translate("greedyClass", "Snaqe", 0));
 	Score->setText(QApplication::translate("greedyClass", "-", 0));
 	Length->setText(QApplication::translate("greedyClass", "-", 0));
 	LengthLabel->setText(QApplication::translate("greedyClass", "Length:", 0));
