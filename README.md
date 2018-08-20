@@ -1,12 +1,12 @@
 Snaqe
 ===============
 
-[![license](https://img.shields.io/github/license/zigzagbob/Gluttonous-Snake.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
-[![AppVeyor](https://img.shields.io/appveyor/ci/zigzagbob/Gluttonous-Snake.svg)](https://ci.appveyor.com/project/zigzagbob/Gluttonous-Snake)
-[![Github All Releases](https://img.shields.io/github/downloads/zigzagbob/Gluttonous-Snake/total.svg)](https://github.com/zigzagbob/Gluttonous-Snake/releases)
-[![GitHub release](https://img.shields.io/github/release/zigzagbob/Gluttonous-Snake.svg)](https://github.com/zigzagbob/Gluttonous-Snake/releases/latest)
+[![license](https://img.shields.io/github/license/zigzagbob/Snaqe.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![AppVeyor](https://img.shields.io/appveyor/ci/zigzagbob/Snaqe.svg)](https://ci.appveyor.com/project/zigzagbob/Snaqe)
+[![Github All Releases](https://img.shields.io/github/downloads/zigzagbob/Snaqe/total.svg)](https://github.com/zigzagbob/Snaqe/releases)
+[![GitHub release](https://img.shields.io/github/release/zigzagbob/Snaqe.svg)](https://github.com/zigzagbob/Snaqe/releases/latest)
 
-The Qt version of classic game Gluttonous Snake, how about calling it Snaqe.
+Classic game Gluttonous Snake in Qt version, how about calling it Snaqe?
 
 ![LE interface](https://github.com/zigzagbob/Compile/raw/master/png/gs.PNG)
 
