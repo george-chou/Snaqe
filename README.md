@@ -18,17 +18,15 @@ Download available at <https://github.com/zigzagbob/Snaqe/releases>.
 
 ## Pre-installed software ##
 
-### Static compiler ###
+### Static Qt compiler ###
 
 The source of static compiler: [qt-everywhere-opensource-src-5.4.0-rc](http://download.qt.io/development_releases/qt/5.4/5.4.0-rc/single/qt-everywhere-opensource-src-5.4.0-rc.zip)
 
 The tutorial(in Chinese) of building static compiler: <http://zerois.me/id-36.html>
 
-### Dynamic compiler ###
+### Dynamic Qt compiler ###
 
-The installation package of dynamic compiler:
-
-[qt-opensource-windows-x86-msvc2013_opengl-5.4.1](http://download.qt.io/archive/qt/5.4/5.4.1/qt-opensource-windows-x86-msvc2013_opengl-5.4.1.exe)
+The installation package of dynamic compiler: [qt-opensource-windows-x86-msvc2013_opengl-5.4.1](http://download.qt.io/archive/qt/5.4/5.4.1/qt-opensource-windows-x86-msvc2013_opengl-5.4.1.exe)
 
 ## Build worker ##
 
