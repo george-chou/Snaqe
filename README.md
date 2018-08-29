@@ -8,7 +8,7 @@ Snaqe
 
 Classic game Gluttonous Snake in Qt version, how about calling it Snaqe?
 
-![LE interface](https://github.com/zigzagbob/Compile/raw/master/png/gs.PNG)
+![LE interface](https://github.com/zigzagbob/zigzagbob.github.io/raw/master/RmPNG/gs.PNG)
 
 # Download #
 
