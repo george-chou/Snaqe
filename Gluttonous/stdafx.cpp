@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
-int  v, N, Snake_Length;
+int  v, L;
 bool GameOver, Pause;
-body Sn[Res * Res];
+body Sn[N * N];
 
-QPoint L, F;  
+QPoint H, F;  
 
 int max(int x, int y)
 {

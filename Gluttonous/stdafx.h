@@ -1,15 +1,19 @@
 #include <QtWidgets>
+#define N 32
 
-#define C_WHITE 1.0
-#define C_RED 0.0
+enum colour
+{
+	C_RED = 0,
+	C_WHITE
+};
 
-#define V_RIGHT 0
-#define V_LEFT 1
-#define V_UP 2
-#define V_DOWN 3 
-
-#define Res 32
-
+enum direction
+{
+	V_RIGHT = 0,
+	V_LEFT,
+	V_UP,
+	V_DOWN
+};
 
 struct body{
 	int X_OLD;
@@ -18,10 +22,10 @@ struct body{
 	int Y_NOW;
 };
 
-extern int  v, N, Snake_Length;
+extern int  v, L;
 extern bool GameOver, Pause;
-extern body Sn[Res * Res];
-extern QPoint L, F; 
+extern body Sn[N * N];
+extern QPoint H, F; 
 
 extern int max(int x, int y);
 extern int max_4(int a, int b, int c, int d);

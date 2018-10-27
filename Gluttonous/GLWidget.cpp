@@ -10,9 +10,7 @@
  
 
 GLWidget::GLWidget(QWidget *parent) :QOpenGLWidget(parent)
-{
-
-	N = Res;
+{ 
 	GameOver = true;
 	Pause = true;
 
@@ -55,7 +53,7 @@ void GLWidget::paintGL()
 		if (!Pause)
 		{
 			Pause = true;
-			emit (Snake_Length >= N * N) ? Winner() : Wasted();
+			emit (L >= N * N) ? Winner() : Wasted();
 		}
 
 	}
@@ -135,11 +133,11 @@ void GLWidget::Down(void)
 
 void GLWidget::EatFood(void){
 
-	while (L == F)
+	while (H == F)
 	{
 		sf->Grow(); 
-		emit UpdLength(Snake_Length);
-		if (gf->MissionImpossible(Snake_Length)) 
+		emit UpdLength(L);
+		if (gf->MissionImpossible(L)) 
 		{
 			break;
 		}
@@ -157,9 +155,9 @@ void GLWidget::EatFood(void){
 void GLWidget::InitVar(void)
 {
 
-	L = gf->RandCoord();
-	v = gf->InitDir(L);
-	sf->NewSnake(L);
+	H = gf->RandCoord();
+	v = gf->InitDir(H);
+	sf->NewSnake(H);
 	gf->CreateFood();
 
 }
@@ -183,7 +181,7 @@ void GLWidget::DrawBlock(QPoint p, float c)
 void GLWidget::DrawSnake(void)
 {
 	int i;
-	for (i = 0; i <= Snake_Length - 1; i++)
+	for (i = 0; i <= L - 1; i++)
 	{		
 		DrawBlock(QPoint(Sn[i].X_NOW, Sn[i].Y_NOW), C_WHITE);
 	}
