@@ -38,19 +38,22 @@ void GLWidget::paintGL()
 {
 	if (!GameOver){
 
-		if (!Pause){
+		if (!Pause)
+		{
 			glClear(GL_COLOR_BUFFER_BIT);
-			DrawBlock(F, C_RED);    //Draw food. //DrawFood();
+			DrawBlock(F, C_RED);    //Draw food. 
 			DrawSnake();
 		}
 
 	}
-	else{
+	else
+	{
 
 		glClear(GL_COLOR_BUFFER_BIT);
 		sf->KillSnake();
 
-		if (!Pause){
+		if (!Pause)
+		{
 			Pause = true;
 			emit (Snake_Length >= N * N) ? Winner() : Wasted();
 		}
@@ -61,12 +64,15 @@ void GLWidget::paintGL()
 
 void GLWidget::keyPressEvent(QKeyEvent *event)
 {
-	if (event->key() == Qt::Key_Space){
+	if (event->key() == Qt::Key_Space)
+	{
 		GameOver ? Start() : Resume();
 	}
 
-	if (!Pause){
-		switch (event->key()){
+	if (!Pause)
+	{
+		switch (event->key())
+		{
 
 		case Qt::Key_Left:  Left();  break;
 		case Qt::Key_Right: Right(); break;
@@ -129,10 +135,12 @@ void GLWidget::Down(void)
 
 void GLWidget::EatFood(void){
 
-	while (L == F){
+	while (L == F)
+	{
 		sf->Grow(); 
 		emit UpdLength(Snake_Length);
-		if (gf->MissionImpossible(Snake_Length)) {
+		if (gf->MissionImpossible(Snake_Length)) 
+		{
 			break;
 		}
 		else
@@ -146,7 +154,8 @@ void GLWidget::EatFood(void){
 // signals above
 
 
-void GLWidget::InitVar(void){
+void GLWidget::InitVar(void)
+{
 
 	L = gf->RandCoord();
 	v = gf->InitDir(L);
@@ -173,7 +182,8 @@ void GLWidget::DrawBlock(QPoint p, float c)
 
 void GLWidget::DrawSnake(void)
 {
-	for (int i = 0; i <= Snake_Length - 1; i++)
+	int i;
+	for (i = 0; i <= Snake_Length - 1; i++)
 	{		
 		DrawBlock(QPoint(Sn[i].X_NOW, Sn[i].Y_NOW), C_WHITE);
 	}

@@ -21,9 +21,12 @@ bool game::MissionImpossible(int Snake_Length)
 }
 
 
-bool game::Covered(QPoint p){
+bool game::Covered(QPoint p)
+{
+	int i;
 	bool cover = false;
-	for (int i = 0; i <= Snake_Length - 1; i++)
+
+	for (i = 0; i <= Snake_Length - 1; i++)
 	{
 		if (Sn[i].X_NOW == p.x() && Sn[i].Y_NOW == p.y())
 		{

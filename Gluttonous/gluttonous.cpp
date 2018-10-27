@@ -4,8 +4,7 @@
 
 Gluttonous::Gluttonous(QWidget *parent)
 	: QMainWindow(parent)
-{
-	//ui.setupUi(this);
+{ 
 	setupUi(this);
 }
 

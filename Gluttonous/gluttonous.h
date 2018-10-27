@@ -9,7 +9,7 @@ class Gluttonous : public QMainWindow
 	Q_OBJECT
 
 public:
-	Gluttonous(QWidget *parent = 0);
+	Gluttonous(QWidget * = 0);
 	~Gluttonous();
 
 	QWidget *centralWidget;
