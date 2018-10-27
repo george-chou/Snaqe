@@ -1,7 +1,6 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
-
-//#include <GL/glut.h>
+ 
 #include <QtWidgets/QOpenGLWidget>
 #include "snake.h"
 #include "game.h"
@@ -13,7 +12,7 @@ class GLWidget : public QOpenGLWidget
 
 public:
 
-	GLWidget(QWidget *parent = 0);
+	GLWidget(QWidget * = 0);
 
 private:
 
@@ -24,14 +23,14 @@ private:
 	void DrawSnake(void); 
 	void EatFood(void);
 	void DrawFood(void);
-	void DrawBlock(int x, int y, float c);
+	void DrawBlock(QPoint, float);
 	
 
 protected:
 	void initializeGL();
 	void resizeGL(int w, int h);
 	void paintGL();
-	void keyPressEvent(QKeyEvent *event);
+	void keyPressEvent(QKeyEvent *);
 
 signals:
 	

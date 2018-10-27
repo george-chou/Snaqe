@@ -18,9 +18,11 @@ struct body{
 	int Y_NOW;
 };
 
-extern int  L_x, L_y, F_x, F_y, v, N, Snake_Length;
+extern int  v, N, Snake_Length;
 extern bool GameOver, Pause;
 extern body Sn[Res * Res];
+
+extern QPoint L, F; // L_x, L_y, F_x, F_y, 
 
 extern int max(int x, int y);
 extern int max_4(int a, int b, int c, int d);

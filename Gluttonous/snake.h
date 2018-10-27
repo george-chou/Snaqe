@@ -5,7 +5,7 @@ public:
 	snake();
 	~snake();
 
-	void NewSnake(int x, int y);
+	void NewSnake(QPoint);
 	void KillSnake(void);
 	void SnakeMove(void);
 	void Grow(void);

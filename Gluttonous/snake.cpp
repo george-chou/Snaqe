@@ -13,11 +13,11 @@ snake::~snake()
 }
 
 
-void snake::NewSnake(int x, int y){
+void snake::NewSnake(QPoint p){
 	Snake_Length = 2;
 
-	Sn[0].X_NOW = x;
-	Sn[0].Y_NOW = y;
+	Sn[0].X_NOW = p.x();
+	Sn[0].Y_NOW = p.y();
 
 	switch (v)
 	{
@@ -45,7 +45,7 @@ void snake::NewSnake(int x, int y){
 
 void snake::Death(void)
 {
-	GameOver = (L_x >= N || L_y >= N || L_x < 0 || L_y < 0);
+	GameOver = (L.x() >= N || L.y() >= N || L.x() < 0 || L.y() < 0);
 
 	if (Snake_Length > 4){
 		bool Bitten = false;
@@ -69,8 +69,8 @@ void snake::SnakeMove(void)
 		Sn[i].X_NOW = Sn[i - 1].X_NOW;
 		Sn[i].Y_NOW = Sn[i - 1].Y_NOW;
 	}
-	Sn[0].X_NOW = L_x;
-	Sn[0].Y_NOW = L_y;
+	Sn[0].X_NOW = L.x();
+	Sn[0].Y_NOW = L.y();
 }
 
 void snake::KillSnake(void)

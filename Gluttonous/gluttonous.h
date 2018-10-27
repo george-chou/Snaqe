@@ -2,8 +2,7 @@
 #define GLUTTONOUS_H
 
 #include <QtWidgets/QMainWindow>
-#include<QTimer>
-//#include "ui_gluttonous.h"
+#include<QTimer> 
 
 class Gluttonous : public QMainWindow
 {
@@ -22,11 +21,9 @@ public:
 	QLabel *MessageLabel;
 	QTimer *refresh;
 
-private:
-	//Ui::GluttonousClass ui;
-
-	void setupUi(QMainWindow *MainWindow);
-	void retranslateUi(QMainWindow *MainWindow);
+private: 
+	void setupUi(QMainWindow *);
+	void retranslateUi(QMainWindow *);
 
 public slots:
 

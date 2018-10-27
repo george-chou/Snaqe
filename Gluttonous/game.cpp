@@ -21,10 +21,12 @@ bool game::MissionImpossible(int Snake_Length)
 }
 
 
-bool game::Covered(int x, int y){
+bool game::Covered(QPoint p){
 	bool cover = false;
-	for (int i = 0; i <= Snake_Length - 1; i++){
-		if (Sn[i].X_NOW == x && Sn[i].Y_NOW == y){
+	for (int i = 0; i <= Snake_Length - 1; i++)
+	{
+		if (Sn[i].X_NOW == p.x() && Sn[i].Y_NOW == p.y())
+		{
 			cover = true;
 			break;
 		}
@@ -32,41 +34,43 @@ bool game::Covered(int x, int y){
 	return cover;
 }
 
-void game::RandCoord(int *F_x, int *F_y)
+QPoint game::RandCoord(void)
 {
+	QPoint p(0, 0);
 	srand(time(NULL));
-	*F_x = rand() % N;
-	*F_y = rand() % N;
+	p.setX(rand() % N);
+	p.setY(rand() % N);
+	return p;
 }
 
 void game::CreateFood(void)
 {
 	do
 	{
-		RandCoord(&F_x, &F_y);
+		F = RandCoord();
 
-	} while (Covered(F_x, F_y));
+	} while (Covered(F));
 }
 
 void game::Direction(int v)
 {
 	switch (v)
 	{
-	case V_RIGHT: L_x++; break;
-	case V_LEFT:  L_x--; break;
-	case V_UP:    L_y++; break;
-	case V_DOWN:  L_y--; break;
+	case V_RIGHT: L.setX(L.x() + 1); break;
+	case V_LEFT:  L.setX(L.x() - 1); break;
+	case V_UP:    L.setY(L.y() + 1); break;
+	case V_DOWN:  L.setY(L.y() - 1); break;
 	default: break;
 	}
 }
 
 
-int game::InitDir(int x, int y)
+int game::InitDir(QPoint p)
 {
-	int d_left = x;
-	int d_down = y;
-	int d_right = N - 1 - x;
-	int d_up = N - 1 - y;
+	int d_left = p.x();
+	int d_down = p.y();
+	int d_right = N - 1 - p.x();
+	int d_up = N - 1 - p.y();
 
 	int d_max = max_4(d_left, d_down, d_right, d_up);
 	int dv = V_RIGHT;

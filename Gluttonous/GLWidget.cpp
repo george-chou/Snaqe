@@ -40,7 +40,7 @@ void GLWidget::paintGL()
 
 		if (!Pause){
 			glClear(GL_COLOR_BUFFER_BIT);
-			DrawBlock(F_x, F_y, C_RED);    //Draw food. //DrawFood();
+			DrawBlock(F, C_RED);    //Draw food. //DrawFood();
 			DrawSnake();
 		}
 
@@ -129,7 +129,7 @@ void GLWidget::Down(void)
 
 void GLWidget::EatFood(void){
 
-	while (L_x == F_x && L_y == F_y){
+	while (L == F){
 		sf->Grow(); 
 		emit UpdLength(Snake_Length);
 		if (gf->MissionImpossible(Snake_Length)) {
@@ -148,24 +148,24 @@ void GLWidget::EatFood(void){
 
 void GLWidget::InitVar(void){
 
-	gf->RandCoord(&L_x, &L_y);
-	v = gf->InitDir(L_x, L_y);
-	sf->NewSnake(L_x, L_y);
+	L = gf->RandCoord();
+	v = gf->InitDir(L);
+	sf->NewSnake(L);
 	gf->CreateFood();
 
 }
 
 
-void GLWidget::DrawBlock(int x, int y, float c)
+void GLWidget::DrawBlock(QPoint p, float c)
 {
 	float h = 1.0f / N;
 	float d = 0.125 * h;
 
 	glBegin(GL_QUADS);
-	glColor3f(1.0, c, c); glVertex2f(x * h + d, y * h + d);
-	glColor3f(1.0, c, c); glVertex2f(x * h + d, (y + 1) * h - d);
-	glColor3f(1.0, c, c); glVertex2f((x + 1) * h - d, (y + 1) * h - d);
-	glColor3f(1.0, c, c); glVertex2f((x + 1) * h - d, y * h + d);
+	glColor3f(1.0, c, c); glVertex2f(p.x() * h + d, p.y() * h + d);
+	glColor3f(1.0, c, c); glVertex2f(p.x() * h + d, (p.y() + 1) * h - d);
+	glColor3f(1.0, c, c); glVertex2f((p.x() + 1) * h - d, (p.y() + 1) * h - d);
+	glColor3f(1.0, c, c); glVertex2f((p.x() + 1) * h - d, p.y() * h + d);
 	glEnd();
 
 }
@@ -173,8 +173,9 @@ void GLWidget::DrawBlock(int x, int y, float c)
 
 void GLWidget::DrawSnake(void)
 {
-	for (int i = 0; i <= Snake_Length - 1; i++){
-		DrawBlock(Sn[i].X_NOW, Sn[i].Y_NOW, C_WHITE);
+	for (int i = 0; i <= Snake_Length - 1; i++)
+	{		
+		DrawBlock(QPoint(Sn[i].X_NOW, Sn[i].Y_NOW), C_WHITE);
 	}
 }
 

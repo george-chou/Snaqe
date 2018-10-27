@@ -5,15 +5,15 @@ public:
 	game();
 	~game();
 
-	void Direction(int v);
-	int InitDir(int x, int y);
+	void Direction(int);
+	int InitDir(QPoint);
 	void CreateFood(void);
 	bool MissionImpossible(int);
-	void RandCoord(int *F_x, int *F_y);
+	QPoint RandCoord(void);
 
 private:
 
-	bool Covered(int x, int y);
+	bool Covered(QPoint);
 
 };
 
