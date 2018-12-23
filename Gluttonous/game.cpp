@@ -15,18 +15,15 @@ game::~game()
 
 bool game::MissionImpossible(int L)
 {
-	bool w = (L >= N * N);
-	if (w) GameOver = true; 
-	return w;
+	return (L >= N * N);
 }
 
 
 bool game::Covered(QPoint p)
-{
-	int i;
+{ 
 	bool cover = false;
 
-	for (i = 0; i <= L - 1; i++)
+	for (int i = 0; i <= L - 1; i++)
 	{
 		if (Sn[i].X_NOW == p.x() && Sn[i].Y_NOW == p.y())
 		{
@@ -37,24 +34,43 @@ bool game::Covered(QPoint p)
 	return cover;
 }
 
-QPoint game::RandCoord(void)
+int game::randNum(int u)
 {
-	QPoint p(0, 0);
 	srand(time(NULL));
-	p.setX(rand() % N);
-	p.setY(rand() % N);
-	return p;
+	return (rand() % u);
+}
+
+QPoint game::randPoint(int u)
+{
+	srand(time(NULL));
+	return QPoint((rand() % u), (rand() % u));
 }
 
 void game::CreateFood(void)
 {
-	QPoint prf(0, 0);
-	do
-	{
-		prf = RandCoord();
+	int i, j;
+	int k = 0;
+	QPoint p[N * N] = { QPoint(0, 0) };
 
-	} while (Covered(prf));
-	F = prf;
+	for (i = 0; i < N; i++)
+	{
+		for (j = 0; j < N; j++)
+		{
+			if (!Covered(QPoint(i, j)))
+			{
+				p[k] = QPoint(i, j);
+				k++;
+			} 
+		}
+	}
+
+	i = randNum(k);
+	F = p[i];
+}
+
+void game::CreateHead(void)
+{
+	H = randPoint(N);
 }
 
 void game::Direction(int v)

@@ -45,13 +45,12 @@ void snake::NewSnake(QPoint p)
 
 
 void snake::Death(void)
-{
-	int i;
+{ 
 	GameOver = (H.x() >= N || H.y() >= N || H.x() < 0 || H.y() < 0);
 
 	if (L > 4){
 		bool Bitten = false;
-		for (i = 4; i <= L - 1; i++)
+		for (int i = 4; i <= L - 1; i++)
 		{
 			if (Sn[0].X_NOW == Sn[i].X_NOW && Sn[0].Y_NOW == Sn[i].Y_NOW)
 			{
@@ -65,14 +64,12 @@ void snake::Death(void)
 
 
 
-void snake::SnakeMove(void)
-{
-	int i;
-
+void snake::SnakeMove(QPoint H)
+{ 
 	Sn[L - 1].X_OLD = Sn[L - 1].X_NOW;
 	Sn[L - 1].Y_OLD = Sn[L - 1].Y_NOW;
 
-	for (i = L - 1; i >= 1; i--)
+	for (int i = L - 1; i >= 1; i--)
 	{
 		Sn[i].X_NOW = Sn[i - 1].X_NOW;
 		Sn[i].Y_NOW = Sn[i - 1].Y_NOW;
@@ -83,9 +80,8 @@ void snake::SnakeMove(void)
 }
 
 void snake::KillSnake(void)
-{
-	int i;
-	for (i = 0; i <= L - 1; i++)
+{ 
+	for (int i = 0; i <= L - 1; i++)
 	{
 		Sn[i].X_NOW = Sn[i].X_OLD = Sn[i].Y_NOW = Sn[i].Y_OLD = -1;
 	}

@@ -7,13 +7,13 @@
 #include<QKeyEvent> 
 #include "GLWidget.h"  
 
- 
+//#include<time.h>
 
 GLWidget::GLWidget(QWidget *parent) :QOpenGLWidget(parent)
 { 
+	Auto = false;
 	GameOver = true;
-	Pause = true;
-
+	Pause = true; 
 	InitVar();
 }
 
@@ -46,25 +46,61 @@ void GLWidget::paintGL()
 	}
 	else
 	{
-
 		glClear(GL_COLOR_BUFFER_BIT);
 		sf->KillSnake();
 
 		if (!Pause)
 		{
 			Pause = true;
-			emit (L >= N * N) ? Winner() : Wasted();
+			if (gf->MissionImpossible(L))
+			{
+				DrawCup();
+				emit Winner();
+			}
+			else
+			{
+				DrawLose();
+				emit Wasted();
+			}
 		}
 
 	}
 }
 
+direction GLWidget::curDir(QPoint H, QPoint R)
+{
+	QPoint d = H - R;
+
+	if (d == QPoint(1, 0))
+	{
+		return V_RIGHT;
+	}
+	else if (d == QPoint(-1, 0))
+	{
+		return V_LEFT;
+	}
+	else if (d == QPoint(0, 1))
+	{
+		return V_UP;
+	}
+	else
+	{
+		return V_DOWN;
+	}
+ 
+}
 
 void GLWidget::keyPressEvent(QKeyEvent *event)
 {
 	if (event->key() == Qt::Key_Space)
 	{
 		GameOver ? Start() : Resume();
+	}
+	else if (event->key() == Qt::Key_F1)
+	{
+		Auto = !Auto;
+		if (!Auto) v = curDir(H, QPoint(Sn[1].X_NOW, Sn[1].Y_NOW));
+		emit Mode(Auto);
 	}
 
 	if (!Pause)
@@ -99,11 +135,12 @@ void GLWidget::Start(void)
 }
 
 void GLWidget::Update(void)
-{
-	gf->Direction(v);    //Update orientation
-	sf->SnakeMove();
-	EatFood();
+{ 
+	Auto ? H = af->amoveSnake(H, F) : gf->Direction(v);
+
+	sf->SnakeMove(H); 
 	sf->Death();
+	EatFood();
 	update();
 }
 
@@ -133,18 +170,20 @@ void GLWidget::Down(void)
 
 void GLWidget::EatFood(void){
 
-	while (H == F)
+	if (H == F)
 	{
 		sf->Grow(); 
 		emit UpdLength(L);
+		
 		if (gf->MissionImpossible(L)) 
-		{
-			break;
+		{ 
+			GameOver = true;
 		}
 		else
 		{
 			gf->CreateFood();
 		}
+ 
 	}
 
 }
@@ -153,38 +192,209 @@ void GLWidget::EatFood(void){
 
 
 void GLWidget::InitVar(void)
-{
-
-	H = gf->RandCoord();
+{ 
+	gf->CreateHead();
 	v = gf->InitDir(H);
 	sf->NewSnake(H);
-	gf->CreateFood();
-
+	gf->CreateFood(); 
 }
 
 
-void GLWidget::DrawBlock(QPoint p, float c)
+void GLWidget::DrawBlock(QPoint p, colour c)
 {
 	float h = 1.0f / N;
 	float d = 0.125 * h;
+	float cl[3] = { 0.0 };
+
+	switch (c)
+	{
+	case C_WHITE:
+		cl[0] = 1.0;
+		cl[1] = 1.0;
+		cl[2] = 1.0;
+		break;
+
+	case C_RED: 
+		cl[0] = 1.0;
+		cl[1] = 0.0;
+		cl[2] = 0.0;
+		break;
+
+	case C_GREEN:
+		cl[0] = 0.0;
+		cl[1] = 1.0;
+		cl[2] = 0.0;
+		break;
+
+	case C_BLUE:
+		cl[0] = 0.0;
+		cl[1] = 0.0;
+		cl[2] = 1.0;
+		break;
+
+	case C_YELLOW:
+		cl[0] = 1.0;
+		cl[1] = 1.0;
+		cl[2] = 0.0;
+		break;
+
+	case C_PURPLE:
+		cl[0] = 1.0;
+		cl[1] = 0.0;
+		cl[2] = 1.0;
+		break;
+
+	case C_SKYBLUE:
+		cl[0] = 0.0;
+		cl[1] = 1.0;
+		cl[2] = 1.0;
+		break;
+
+	default:
+		break;
+	}
 
 	glBegin(GL_QUADS);
-	glColor3f(1.0, c, c); glVertex2f(p.x() * h + d, p.y() * h + d);
-	glColor3f(1.0, c, c); glVertex2f(p.x() * h + d, (p.y() + 1) * h - d);
-	glColor3f(1.0, c, c); glVertex2f((p.x() + 1) * h - d, (p.y() + 1) * h - d);
-	glColor3f(1.0, c, c); glVertex2f((p.x() + 1) * h - d, p.y() * h + d);
+	glColor3f(cl[0], cl[1], cl[2]); glVertex2f(p.x() * h + d, p.y() * h + d);
+	glColor3f(cl[0], cl[1], cl[2]); glVertex2f(p.x() * h + d, (p.y() + 1) * h - d);
+	glColor3f(cl[0], cl[1], cl[2]); glVertex2f((p.x() + 1) * h - d, (p.y() + 1) * h - d);
+	glColor3f(cl[0], cl[1], cl[2]); glVertex2f((p.x() + 1) * h - d, p.y() * h + d);
 	glEnd();
 
 }
  
+void GLWidget::LinkBlocks(int i)
+{
+	float h = 1.0f / N;
+	float d = 0.125 * h;
+
+	QPoint p0(Sn[i].X_NOW, Sn[i].Y_NOW);
+	QPoint p1(Sn[i + 1].X_NOW, Sn[i + 1].Y_NOW);
+	direction v = curDir(p0, p1);  // p0 is on the v direction of p1
+
+	glBegin(GL_QUADS);
+
+	switch (v)
+	{
+	case V_RIGHT: 
+		glColor3f(0.0, 1.0, 0.0); glVertex2f(p0.x() * h - d, p0.y() * h + d);
+		glColor3f(0.0, 1.0, 0.0); glVertex2f(p0.x() * h - d, (p0.y() + 1) * h - d);
+		glColor3f(0.0, 1.0, 0.0); glVertex2f(p0.x() * h + d, (p0.y() + 1) * h - d);
+		glColor3f(0.0, 1.0, 0.0); glVertex2f(p0.x() * h + d, p0.y() * h + d);
+		break;
+
+	case V_LEFT:
+		glColor3f(0.0, 1.0, 0.0); glVertex2f(p1.x() * h - d, p1.y() * h + d);
+		glColor3f(0.0, 1.0, 0.0); glVertex2f(p1.x() * h - d, (p1.y() + 1) * h - d);
+		glColor3f(0.0, 1.0, 0.0); glVertex2f(p1.x() * h + d, (p1.y() + 1) * h - d);
+		glColor3f(0.0, 1.0, 0.0); glVertex2f(p1.x() * h + d, p1.y() * h + d);
+		break; 
+
+	case V_UP:
+		glColor3f(0.0, 1.0, 0.0); glVertex2f(p0.x() * h + d, p0.y() * h - d);
+		glColor3f(0.0, 1.0, 0.0); glVertex2f(p0.x() * h + d, p0.y() * h + d);
+		glColor3f(0.0, 1.0, 0.0); glVertex2f((p0.x() + 1) * h - d, p0.y() * h + d);
+		glColor3f(0.0, 1.0, 0.0); glVertex2f((p0.x() + 1) * h - d, p0.y() * h - d);
+		break;
+	
+	default:
+		glColor3f(0.0, 1.0, 0.0); glVertex2f(p1.x() * h + d, p1.y() * h - d);
+		glColor3f(0.0, 1.0, 0.0); glVertex2f(p1.x() * h + d, p1.y() * h + d);
+		glColor3f(0.0, 1.0, 0.0); glVertex2f((p1.x() + 1) * h - d, p1.y() * h + d);
+		glColor3f(0.0, 1.0, 0.0); glVertex2f((p1.x() + 1) * h - d, p1.y() * h - d);
+		break;
+	}
+
+	glEnd();
+}
 
 void GLWidget::DrawSnake(void)
 {
 	int i;
 	for (i = 0; i <= L - 1; i++)
-	{		
-		DrawBlock(QPoint(Sn[i].X_NOW, Sn[i].Y_NOW), C_WHITE);
+	{
+		colour c = C_GREEN;
+		if (i == 0) c = C_YELLOW;
+		if (i == L - 1) c = C_SKYBLUE;
+
+		DrawBlock(QPoint(Sn[i].X_NOW, Sn[i].Y_NOW), c);
 	}
+
+	for (i = 0; i <= L - 2; i++)
+	{
+		LinkBlocks(i);
+	}
+}
+
+void GLWidget::DrawCup(void)
+{
+	int i, j;
+
+	int cup[N][N] = {
+		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },	// 15
+		{ 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },	// 14
+		{ 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1 },	// 13
+		{ 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1 },	// 12
+		{ 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1 },	// 11
+		{ 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0 },	// 10
+		{ 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0 },	// 9
+		{ 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0 },	// 8
+		{ 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 },	// 7
+		{ 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0 },	// 6
+		{ 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0 },	// 5
+		{ 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0 },	// 4
+		{ 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0 },	// 3
+		{ 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0 },	// 2
+		{ 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 },	// 1
+		{ 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 }  // 0
+	};
+
+	for (i = 0; i < N; i++)
+	{
+		for (j = 0; j < N; j++)
+		{
+			if (cup[i][j])
+			{
+				DrawBlock(QPoint(j, N - i - 1), C_YELLOW);
+			}
+		}
+	}
+}
+
+void GLWidget::DrawLose(void)
+{
+	int i, j;
+	int Lose[N][N] =
+	{
+		{ 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },	// 15
+		{ 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },	// 14
+		{ 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0 },	// 13
+		{ 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0 },	// 12
+		{ 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0 },	// 11
+		{ 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0 },	// 10
+		{ 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 },	// 9
+		{ 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 },	// 8
+		{ 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 },	// 7
+		{ 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 },	// 6
+		{ 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0 },	// 5
+		{ 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0 },	// 4
+		{ 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0 },	// 3
+		{ 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0 },	// 2
+		{ 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },	// 1
+		{ 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 }  // 0
+	};
+
+	for (i = 0; i < N; i++)
+	{
+		for (j = 0; j < N; j++)
+		{
+			if (Lose[i][j])
+			{
+				DrawBlock(QPoint(j, N - i - 1), C_PURPLE);
+			}
+		}
+	}
+
 }
 
 

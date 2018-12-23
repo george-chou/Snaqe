@@ -18,7 +18,7 @@ void Gluttonous::setupUi(QMainWindow *greedyClass)
 {
 	if (greedyClass->objectName().isEmpty())
 		greedyClass->setObjectName(QStringLiteral("greedyClass"));
-	greedyClass->setFixedSize(512, 584);
+	greedyClass->setFixedSize(512, 615);
 	greedyClass->setLocale(QLocale(QLocale::English, QLocale::UnitedStates));
 
 	centralWidget = new QWidget(greedyClass);
@@ -69,6 +69,13 @@ void Gluttonous::setupUi(QMainWindow *greedyClass)
 	MessageLabel->setGeometry(QRect(40, 530, 431, 31));
 	MessageLabel->setFont(font);
 	MessageLabel->setTextFormat(Qt::AutoText);
+
+	AutoLabel = new QLabel(centralWidget);
+	AutoLabel->setObjectName(QStringLiteral("AutoLabel"));
+	AutoLabel->setGeometry(QRect(40, 565, 431, 31));
+	AutoLabel->setFont(font);
+	AutoLabel->setTextFormat(Qt::AutoText);
+
 	greedyClass->setCentralWidget(centralWidget);
 
 	refresh = new QTimer;
@@ -84,6 +91,7 @@ void Gluttonous::setupUi(QMainWindow *greedyClass)
 	QObject::connect(openGLWidget, SIGNAL(ResumeGame()), this, SLOT(GameResume()));
 	QObject::connect(openGLWidget, SIGNAL(PauseGame()), this, SLOT(GamePause()));
 	QObject::connect(openGLWidget, SIGNAL(Winner()), this, SLOT(Win()));
+	QObject::connect(openGLWidget, SIGNAL(Mode(bool)), this, SLOT(ModeChange(bool)));
 
 	QObject::connect(openGLWidget, SIGNAL(Winner()), refresh, SLOT(stop()));
 	QObject::connect(openGLWidget, SIGNAL(Wasted()), refresh, SLOT(stop()));
@@ -103,7 +111,8 @@ void Gluttonous::retranslateUi(QMainWindow *greedyClass)
 	LengthLabel->setText(QApplication::translate("greedyClass", "Length:", 0));
 	ScoreLabel->setText(QApplication::translate("greedyClass", "Score:", 0));
 	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to play.", 0));
-	refresh->setInterval(100);
+	AutoLabel->setText(QApplication::translate("greedyClass", "Press [F1] to enter AI mode.", 0));
+	refresh->setInterval(50);
 }
 
 void Gluttonous::PrintScore(int l)
@@ -126,7 +135,7 @@ void Gluttonous::ResetGame()
 
 void Gluttonous::RestartGame()
 {
-	MessageLabel->setText(QApplication::translate("greedyClass", "Game over! Press [Space] to replay.", 0));
+	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to try again.", 0));  // Game over! 
 }
 
 void Gluttonous::GameResume()
@@ -136,10 +145,23 @@ void Gluttonous::GameResume()
 
 void Gluttonous::GamePause()
 {
-	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to resume.", 0));
+	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to continue.", 0));
 }
 
 void Gluttonous::Win()
 {
-	MessageLabel->setText(QApplication::translate("greedyClass", "Congratulations! Press [Space] to replay.", 0));
+	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to restart.", 0));  // Congratulations! 
+}
+
+void Gluttonous::ModeChange(bool Auto)
+{
+	if (Auto)
+	{
+		AutoLabel->setText(QApplication::translate("greedyClass", "Press [F1] to enter MANUAL mode.", 0));
+	}
+	else
+	{
+		AutoLabel->setText(QApplication::translate("greedyClass", "Press [F1] to enter AI mode.", 0));
+	} 
+
 }

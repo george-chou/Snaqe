@@ -8,12 +8,13 @@ public:
 	void Direction(int);
 	int InitDir(QPoint);
 	void CreateFood(void);
+	void CreateHead(void);
 	bool MissionImpossible(int);
-	QPoint RandCoord(void);
-
+	
 private:
 
 	bool Covered(QPoint);
-
+	int randNum(int);
+	QPoint randPoint(int); 
 };
 

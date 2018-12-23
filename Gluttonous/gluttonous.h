@@ -19,6 +19,7 @@ public:
 	QLabel *LengthLabel;
 	QLabel *ScoreLabel;
 	QLabel *MessageLabel;
+	QLabel *AutoLabel;
 	QTimer *refresh;
 
 private: 
@@ -34,6 +35,7 @@ public slots:
 	void GameResume(void);
 	void GamePause(void);
 	void Win(void);
+	void ModeChange(bool);
 };
 
 #endif // GLUTTONOUS_H

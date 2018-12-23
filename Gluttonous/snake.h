@@ -7,7 +7,7 @@ public:
 
 	void NewSnake(QPoint);
 	void KillSnake(void);
-	void SnakeMove(void);
+	void SnakeMove(QPoint);
 	void Grow(void);
 	void Death(void);
 };
