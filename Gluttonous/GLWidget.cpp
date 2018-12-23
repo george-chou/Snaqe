@@ -45,12 +45,12 @@ void GLWidget::paintGL()
 
 	}
 	else
-	{
-		glClear(GL_COLOR_BUFFER_BIT);
-		sf->KillSnake();
-
+	{ 
 		if (!Pause)
 		{
+			glClear(GL_COLOR_BUFFER_BIT);
+			sf->KillSnake();
+
 			Pause = true;
 			if (gf->MissionImpossible(L))
 			{

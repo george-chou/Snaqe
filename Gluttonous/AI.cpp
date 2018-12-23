@@ -286,7 +286,7 @@ QPoint AI::departFood(QPoint H)
 	  QPoint pRight(H.x() + 1, H.y());
 	  QPoint pLeft(H.x() - 1, H.y());
 
-	  QPoint R = (L < 200) ? F : QPoint(Sn[L - 1].X_NOW, Sn[L - 1].Y_NOW);
+	  QPoint R = (L <= N * N / 2) ? F : QPoint(Sn[L - 1].X_NOW, Sn[L - 1].Y_NOW);
 	  direction v[4] = { V_RIGHT }; 
 	  dirArray(R, H, v);
 
