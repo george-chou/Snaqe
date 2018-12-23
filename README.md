@@ -6,7 +6,7 @@ Snaqe
 [![Github All Releases](https://img.shields.io/github/downloads/zigzagbob/Snaqe/total.svg)](https://github.com/zigzagbob/Snaqe/releases)
 [![GitHub release](https://img.shields.io/github/release/zigzagbob/Snaqe.svg)](https://github.com/zigzagbob/Snaqe/releases/latest)
 
-Classic game Gluttonous Snake in Qt version, how about calling it Snaqe?
+Classic game Gluttonous Snake with AI based on A* algorithm in Qt version, how about calling it Snaqe?
 
 ![LE interface](https://github.com/zigzagbob/zigzagbob.github.io/raw/master/RmPNG/gs.PNG)
 
