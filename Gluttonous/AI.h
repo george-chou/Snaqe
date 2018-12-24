@@ -16,11 +16,12 @@ private:
 	bool findTail(QPoint *, int);
 	bool virtualSnake(QPoint *, int);
 	bool neighbor(QPoint, QPoint);
-	QPoint departFood(QPoint);
+	QPoint departTail(QPoint *, int);
 	bool Bit(QPoint);
 	bool Border(QPoint);
-	bool safeRandStep(QPoint, direction);
+	QPoint safeRandStep(QPoint);
 	void dirArray(QPoint, QPoint, direction *);
 	QPoint dir2p(QPoint, direction);
+	bool inArray(QPoint, QPoint *, int);
 };
 

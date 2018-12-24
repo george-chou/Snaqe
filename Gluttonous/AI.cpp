@@ -180,29 +180,64 @@ bool AI::Border(QPoint p)
 	return (0 > p.x() || p.x() > N - 1 || 0 > p.y() || p.y() > N - 1);
 }
 
-bool AI::safeRandStep(QPoint H, direction V)
+QPoint AI::safeRandStep(QPoint H)
 {
-	QPoint vH = dir2p(H, V);
+	int i, j, k;
+	i = j = k = 0;
 
-	if (!Bit(vH) && !Border(vH))
+	QPoint vH(0, 0);	
+	
+	QPoint pV[4] = { QPoint(0, 0) };
+	QPoint pH[4] = { QPoint(0, 0) };
+
+	direction V[4] = { V_RIGHT };
+	dirArray(F, H, V);
+
+	for (i = 0; i < 4; i++)
 	{
+		vH = dir2p(H, V[i]);
+		if (!Bit(vH) && !Border(vH))
+		{
+			pV[j] = vH;
+			j++;
+		}
+	}
+
+	if (j == 1)
+	{
+		return pV[0];
+	}
+	else if (j > 1)
+	{ 
 		QPoint *p = (QPoint *)malloc(sizeof(QPoint)* L);
 
-		p[0] = vH;
-
-		for (int i = 1; i <= L - 1; i++)
+		for (i = 1; i <= L - 1; i++)
 		{
 			p[i].setX(Sn[i - 1].X_NOW);
 			p[i].setY(Sn[i - 1].Y_NOW);
 		}
 
-		return findTail(p, L - 1);
+		for (i = 0; i < j; i++)
+		{
+			p[0] = pV[i];
+			if (findTail(p, L - 1))    // here can be optimized.
+			{
+				pH[k] = p[0];
+				k++;
+			}
+		}
+
+		if (k > 0)	// depart from food
+		{
+			return pH[0];
+		}
+		else	// depart from tail
+		{
+			return departTail(pV, j);
+		} 
 
 	}
-	else
-	{
-		return false;
-	}
+
 }
 
 void AI::dirArray(QPoint F, QPoint H, direction *v)
@@ -272,40 +307,42 @@ QPoint AI::dir2p(QPoint H, direction v)
 {
 	switch (v)
 	{
-	case V_RIGHT: return QPoint(H.x() + 1, H.y());
-	case V_LEFT:  return QPoint(H.x() - 1, H.y());
-	case V_UP:	  return QPoint(H.x(), H.y() + 1);
-	default:	  return QPoint(H.x(), H.y() - 1);
+	case V_RIGHT:	return QPoint(H.x() + 1, H.y());
+	case V_LEFT:	return QPoint(H.x() - 1, H.y());
+	case V_UP:		return QPoint(H.x(), H.y() + 1);
+	default:		return QPoint(H.x(), H.y() - 1);
 	}
 }
 
-QPoint AI::departFood(QPoint H)
-{ 
-	  QPoint pUp(H.x(), H.y() + 1);
-	  QPoint pDown(H.x(), H.y() - 1);
-	  QPoint pRight(H.x() + 1, H.y());
-	  QPoint pLeft(H.x() - 1, H.y());
+QPoint AI::departTail(QPoint *pH, int n)
+{
+	QPoint R(Sn[L - 1].X_NOW, Sn[L - 1].Y_NOW);
+	direction v[4] = { V_RIGHT };
+	dirArray(R, H, v);
 
-	  QPoint R = (L <= N * N / 2) ? F : QPoint(Sn[L - 1].X_NOW, Sn[L - 1].Y_NOW);
-	  direction v[4] = { V_RIGHT }; 
-	  dirArray(R, H, v);
+	for (int i = 0; i < 4; i++)
+	{
+		QPoint vH = dir2p(H, v[i]);
+		if (inArray(vH, pH, n))
+		{
+			R = vH;
+			break;
+		}
+	}
 
-	  if (safeRandStep(H, v[0]))
-	  {
-		  return dir2p(H, v[0]);
-	  }
-	  else if (safeRandStep(H, v[1]))
-	  {
-		  return dir2p(H, v[1]);
-	  }
-	  else if (safeRandStep(H, v[2]))
-	  {
-		  return dir2p(H, v[2]);
-	  }
-	  else
-	  {
-		  return dir2p(H, v[3]);
-	  }
+	return R;
+}
+
+bool AI::inArray(QPoint e, QPoint *s, int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		if (e == s[i])
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 QPoint AI::amoveSnake(QPoint H, QPoint F)
@@ -323,12 +360,12 @@ QPoint AI::amoveSnake(QPoint H, QPoint F)
 		}
 		else
 		{
-			return departFood(H);
+			return safeRandStep(H);
 		}
 	}
 	else
 	{
-		return departFood(H);
+		return safeRandStep(H);
 	} 
 	 
 }
