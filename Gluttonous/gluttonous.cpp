@@ -110,7 +110,7 @@ void Gluttonous::retranslateUi(QMainWindow *greedyClass)
 	Length->setText(QApplication::translate("greedyClass", "-", 0));
 	LengthLabel->setText(QApplication::translate("greedyClass", "Length:", 0));
 	ScoreLabel->setText(QApplication::translate("greedyClass", "Score:", 0));
-	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to play.", 0));
+	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to start a new game.", 0));
 	AutoLabel->setText(QApplication::translate("greedyClass", "Press [F1] to enter AI mode.", 0));
 	refresh->setInterval(50);
 }
@@ -150,7 +150,7 @@ void Gluttonous::GamePause()
 
 void Gluttonous::Win()
 {
-	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to restart.", 0));  // Congratulations! 
+	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to play again", 0));  // Congratulations! 
 }
 
 void Gluttonous::ModeChange(bool Auto)

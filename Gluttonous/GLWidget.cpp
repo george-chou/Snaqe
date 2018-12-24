@@ -6,8 +6,7 @@
 #include<qmath.h>
 #include<QKeyEvent> 
 #include "GLWidget.h"  
-
-//#include<time.h>
+ 
 
 GLWidget::GLWidget(QWidget *parent) :QOpenGLWidget(parent)
 { 
@@ -34,24 +33,23 @@ void GLWidget::resizeGL(int w, int h)
 
 void GLWidget::paintGL()
 {
-	if (!GameOver){
 
-		if (!Pause)
+	if (!Pause)
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		if (!GameOver)
 		{
-			glClear(GL_COLOR_BUFFER_BIT);
-			DrawBlock(F, C_RED);    //Draw food. 
+
+			DrawFood();
 			DrawSnake();
-		}
 
-	}
-	else
-	{ 
-		if (!Pause)
+		} 
+		else
 		{
-			glClear(GL_COLOR_BUFFER_BIT);
-			sf->KillSnake();
 
 			Pause = true;
+			sf->KillSnake(); 
 			if (gf->MissionImpossible(L))
 			{
 				DrawCup();
@@ -61,7 +59,8 @@ void GLWidget::paintGL()
 			{
 				DrawLose();
 				emit Wasted();
-			}
+			} 
+
 		}
 
 	}
@@ -103,7 +102,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
 		emit Mode(Auto);
 	}
 
-	if (!Pause)
+	if (!Pause && !Auto)
 	{
 		switch (event->key())
 		{
@@ -324,6 +323,11 @@ void GLWidget::DrawSnake(void)
 	{
 		LinkBlocks(i);
 	}
+}
+
+void GLWidget::DrawFood(void)
+{
+	DrawBlock(F, C_RED);    //Draw food. 
 }
 
 void GLWidget::DrawCup(void)
