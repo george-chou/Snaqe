@@ -25,9 +25,9 @@ void Gluttonous::setupUi(QMainWindow *greedyClass)
 	centralWidget->setObjectName(QStringLiteral("centralWidget"));
 	Score = new QLabel(centralWidget);
 	Score->setObjectName(QStringLiteral("Score"));
-	Score->setGeometry(QRect(120, 20, 72, 20));
+	Score->setGeometry(QRect(120, 20, 80, 20));
 	QFont font;
-	font.setFamily(QStringLiteral("Microsoft YaHei UI"));
+	font.setFamily(QStringLiteral("Courier New"));
 	font.setPointSize(10);
 	Score->setFont(font);
 	Score->setLocale(QLocale(QLocale::English, QLocale::UnitedStates));
@@ -54,7 +54,7 @@ void Gluttonous::setupUi(QMainWindow *greedyClass)
 
 	LengthLabel = new QLabel(centralWidget);
 	LengthLabel->setObjectName(QStringLiteral("LengthLabel"));
-	LengthLabel->setGeometry(QRect(320, 20, 61, 21));
+	LengthLabel->setGeometry(QRect(320, 20, 65, 21));
 	LengthLabel->setFont(font);
 	LengthLabel->setLocale(QLocale(QLocale::English, QLocale::UnitedStates));
 	LengthLabel->setTextFormat(Qt::AutoText);
@@ -77,15 +77,16 @@ void Gluttonous::setupUi(QMainWindow *greedyClass)
 	AutoLabel->setTextFormat(Qt::AutoText);
 
 	greedyClass->setCentralWidget(centralWidget);
+	 
+	LastTime = 0;
+	refresh = new QTimer; 
 
-	refresh = new QTimer;
+	retranslateUi(greedyClass); 
 
-	retranslateUi(greedyClass);
-
-	QObject::connect(refresh, SIGNAL(timeout()), openGLWidget, SLOT(Update()));
+	QObject::connect(refresh, SIGNAL(timeout()), openGLWidget, SLOT(Update())); 
 
 	QObject::connect(openGLWidget, SIGNAL(GameStart()), this, SLOT(ResetGame()));
-	QObject::connect(openGLWidget, SIGNAL(UpdLength(int)), this, SLOT(PrintScore(int)));
+	QObject::connect(refresh, SIGNAL(timeout()), this, SLOT(PrintScore()));
 	QObject::connect(openGLWidget, SIGNAL(UpdLength(int)), this, SLOT(PrintLength(int)));
 	QObject::connect(openGLWidget, SIGNAL(Wasted()), this, SLOT(RestartGame()));
 	QObject::connect(openGLWidget, SIGNAL(ResumeGame()), this, SLOT(GameResume()));
@@ -106,19 +107,31 @@ void Gluttonous::retranslateUi(QMainWindow *greedyClass)
 {
 	greedyClass->setWindowFlags(this->windowFlags()&~Qt::WindowMaximizeButtonHint);
 	greedyClass->setWindowTitle(QApplication::translate("greedyClass", "Snaqe", 0));
-	Score->setText(QApplication::translate("greedyClass", "-", 0));
+	Score->setText(QApplication::translate("greedyClass", "--:--:--", 0));
 	Length->setText(QApplication::translate("greedyClass", "-", 0));
 	LengthLabel->setText(QApplication::translate("greedyClass", "Length:", 0));
-	ScoreLabel->setText(QApplication::translate("greedyClass", "Score:", 0));
+	ScoreLabel->setText(QApplication::translate("greedyClass", "Time:", 0));
 	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to start a new game.", 0));
 	AutoLabel->setText(QApplication::translate("greedyClass", "Press [F1] to enter AI mode.", 0));
-	refresh->setInterval(50);
+	refresh->setInterval(INTERVAL);
 }
 
-void Gluttonous::PrintScore(int l)
-{
-	int s = (l - 2) * 50;
-	Score->setText(QString::number(s));
+void Gluttonous::PrintScore() 
+{   
+	LastTime += INTERVAL;
+
+	int ms = LastTime;
+	int ss = 1000;
+	int mi = ss * 60;
+	int hh = mi * 60;
+
+	long hour = ms / hh;
+	long minute = (ms - hour * hh) / mi;
+	long second = (ms - hour * hh - minute * mi) / ss;
+
+	QString strBuffer = QString("%1:%2:%3").arg(hour, 2, 10, QLatin1Char('0')).arg(minute, 2, 10, QLatin1Char('0')).arg(second, 2, 10, QLatin1Char('0'));
+	
+	Score->setText(strBuffer);
 }
 
 void Gluttonous::PrintLength(int l)
@@ -128,7 +141,7 @@ void Gluttonous::PrintLength(int l)
 
 void Gluttonous::ResetGame()
 {
-	Score->setNum(0);
+	LastTime = 0;
 	Length->setNum(2);
 	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to pause.", 0));
 }

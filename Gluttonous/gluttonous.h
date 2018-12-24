@@ -1,5 +1,6 @@
 #ifndef GLUTTONOUS_H
 #define GLUTTONOUS_H
+#define INTERVAL 50
 
 #include <QtWidgets/QMainWindow>
 #include<QTimer> 
@@ -26,9 +27,11 @@ private:
 	void setupUi(QMainWindow *);
 	void retranslateUi(QMainWindow *);
 
+	long LastTime; 
+
 public slots:
 
-	void PrintScore(int);
+	void PrintScore();//int);
 	void PrintLength(int);
 	void ResetGame(void);
 	void RestartGame(void);
