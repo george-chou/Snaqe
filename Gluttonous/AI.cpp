@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "AI.h"
 #include "astar.h"
-
+#include "time.h"
 
 AI::AI()
 {
@@ -64,8 +64,9 @@ int AI::findPath(QPoint H, QPoint F, QPoint *pA)
 			}
 			else
 			{
-				(pA + i)->setX(pA[i - 1].x());
-				(pA + i)->setY(cp.y());
+				//(pA + i)->setX(pA[i - 1].x());
+				//(pA + i)->setY(cp.y());
+				*(pA + i) = noCircle(pA, i);
 				*(pA + i + 1) = cp;
 				i += 2;
 			}
@@ -79,6 +80,47 @@ int AI::findPath(QPoint H, QPoint F, QPoint *pA)
 
 	return i;
 }
+
+QPoint AI::noCircle(QPoint pA[], int i)
+{
+	direction v = V_RIGHT;
+
+	if (i == 1)
+	{
+		QPoint neck(Sn[1].X_NOW, Sn[1].Y_NOW);
+		v = vDir(pA[i - 1], neck);
+	}
+	else //if (i > 1)
+	{
+		v = vDir(pA[i - 1], pA[i - 2]);
+	}
+
+	return dir2p(pA[i - 1], v);
+}
+
+direction AI::vDir(QPoint H, QPoint R)  // H is on the vDir of R
+{
+	QPoint d = H - R;
+
+	if (d == QPoint(1, 0))
+	{
+		return V_RIGHT;
+	}
+	else if (d == QPoint(-1, 0))
+	{
+		return V_LEFT;
+	}
+	else if (d == QPoint(0, 1))
+	{
+		return V_UP;
+	}
+	else
+	{
+		return V_DOWN;
+	}
+
+}
+
 
 bool AI::neighbor(QPoint p1, QPoint p2)
 {
@@ -182,15 +224,13 @@ bool AI::Border(QPoint p)
 
 QPoint AI::safeRandStep(QPoint H)
 {
-	int i, j, k;
-	i = j = k = 0;
-
+	int i = 0;
+	int k = 0;
 	QPoint vH(0, 0);	
-	
 	QPoint pV[4] = { QPoint(0, 0) };
 	QPoint pH[4] = { QPoint(0, 0) };
-
 	direction V[4] = { V_RIGHT };
+
 	dirArray(F, H, V);
 
 	for (i = 0; i < 4; i++)
@@ -198,16 +238,16 @@ QPoint AI::safeRandStep(QPoint H)
 		vH = dir2p(H, V[i]);
 		if (!Bit(vH) && !Border(vH))
 		{
-			pV[j] = vH;
-			j++;
+			pV[k] = vH;
+			k++;
 		}
 	}
 
-	if (j == 1)
+	if (k == 1)
 	{
 		return pV[0];
 	}
-	else if (j > 1)
+	else //if (j > 1)
 	{ 
 		QPoint *p = (QPoint *)malloc(sizeof(QPoint)* L);
 
@@ -217,90 +257,154 @@ QPoint AI::safeRandStep(QPoint H)
 			p[i].setY(Sn[i - 1].Y_NOW);
 		}
 
-		for (i = 0; i < j; i++)
+		for (i = 0; i < k; i++)
 		{
 			p[0] = pV[i];
-			if (findTail(p, L - 1))    // here can be optimized.
-			{
-				pH[k] = p[0];
-				k++;
-			}
+			if (findTail(p, L - 1)) return p[0]; 
 		}
 
-		if (k > 0)	// depart from food
-		{
-			return pH[0];
-		}
-		else	// depart from tail
-		{
-			return departTail(pV, j);
-		} 
-
+		return departTail(pV, k);
 	}
 
 }
 
 void AI::dirArray(QPoint F, QPoint H, direction *v)
 {
+	BOOL i = 0;
 	int x = (H - F).x();
 	int y = (H - F).y();
 
-	if (0 <= y && y <= x)
+	if (0 < y && y < x)
 	{
 		*(v + 0) = V_RIGHT;
 		*(v + 1) = V_UP;
 		*(v + 2) = V_DOWN;
-		*(v + 3) = V_LEFT;
+		*(v + 3) = V_LEFT; 
 	}
-	else if (0 <= x && x <= y)
+	else if (0 < x && x < y)
 	{
 		*(v + 0) = V_UP;
 		*(v + 1) = V_RIGHT;
 		*(v + 2) = V_LEFT;
-		*(v + 3) = V_DOWN;
+		*(v + 3) = V_DOWN; 
 	}
-	else if (0 <= -x && -x <= y)
+	else if (0 < -x && -x < y)
 	{
 		*(v + 0) = V_UP;
 		*(v + 1) = V_LEFT;
 		*(v + 2) = V_RIGHT;
-		*(v + 3) = V_DOWN;
+		*(v + 3) = V_DOWN; 
 	}
-	else if (0 <= y && y <= -x)
+	else if (0 < y && y < -x)
 	{
 		*(v + 0) = V_LEFT;
 		*(v + 1) = V_UP;
 		*(v + 2) = V_DOWN;
-		*(v + 3) = V_RIGHT;
+		*(v + 3) = V_RIGHT; 
 	}
-	else if (x <= y && y <= 0)
+	else if (x < y && y < 0)
 	{
 		*(v + 0) = V_LEFT;
 		*(v + 1) = V_DOWN;
 		*(v + 2) = V_UP;
-		*(v + 3) = V_RIGHT;
+		*(v + 3) = V_RIGHT; 
 	}
-	else if (y <= x && x <= 0)
+	else if (y < x && x < 0)
 	{
 		*(v + 0) = V_DOWN;
 		*(v + 1) = V_LEFT;
 		*(v + 2) = V_RIGHT;
-		*(v + 3) = V_UP;
+		*(v + 3) = V_UP; 
 	}
-	else if (y <= -x && -x <= 0)
+	else if (y < -x && -x < 0)
 	{
 		*(v + 0) = V_DOWN;
 		*(v + 1) = V_RIGHT;
 		*(v + 2) = V_LEFT;
-		*(v + 3) = V_UP;
+		*(v + 3) = V_UP; 
 	}
-	else 
+	else if (-x < y && y < 0)
 	{
 		*(v + 0) = V_RIGHT;
 		*(v + 1) = V_DOWN;
 		*(v + 2) = V_UP;
+		*(v + 3) = V_LEFT; 
+	}
+
+	else if (y == 0 && 0 < x)
+	{
+		i = randBOOL();
+		*(v + 0) = V_RIGHT;
+		*(v + 1 + i) = V_UP;
+		*(v + 1 + !i) = V_DOWN;
 		*(v + 3) = V_LEFT;
-	} 
+	}
+	else if (y == x && x > 0)
+	{
+		i = randBOOL();
+		*(v + i) = V_RIGHT;
+		*(v + !i) = V_UP;
+		i = randBOOL();
+		*(v + 2 + i) = V_LEFT;
+		*(v + 2 + !i) = V_DOWN;
+	}
+	else if (y > 0 && 0 == x)
+	{
+		i = randBOOL();
+		*(v + 0) = V_UP;
+		*(v + 1 + i) = V_RIGHT;
+		*(v + 1 + !i) = V_LEFT;
+		*(v + 3) = V_DOWN;
+	}
+	else if (0 < y && y == -x)
+	{
+		i = randBOOL();
+		*(v + i) = V_LEFT;
+		*(v + !i) = V_UP;
+		i = randBOOL();
+		*(v + 2 + i) = V_RIGHT;
+		*(v + 2 + !i) = V_DOWN;
+	}
+	else if (y == 0 && 0 > x)
+	{
+		i = randBOOL();
+		*(v + 0) = V_LEFT;
+		*(v + 1 + i) = V_UP;
+		*(v + 1 + !i) = V_DOWN;
+		*(v + 3) = V_RIGHT;
+	}
+	else if (y == x && x < 0)
+	{
+		i = randBOOL();
+		*(v + i) = V_LEFT;
+		*(v + !i) = V_DOWN;
+		i = randBOOL();
+		*(v + 2 + i) = V_RIGHT;
+		*(v + 2 + !i) = V_UP;
+	}
+	else if (x == 0 && 0 > y)
+	{
+		i = randBOOL();
+		*(v + 0) = V_DOWN;
+		*(v + 1 + i) = V_LEFT;
+		*(v + 1 + !i) = V_RIGHT;
+		*(v + 3) = V_UP;
+	}
+	else  // 0 > y = -x
+	{
+		i = randBOOL();
+		*(v + i) = V_RIGHT;
+		*(v + !i) = V_DOWN;
+		i = randBOOL();
+		*(v + 2 + i) = V_LEFT;
+		*(v + 2 + !i) = V_UP;
+	}
+}
+
+BOOL AI::randBOOL(void)
+{
+	srand(time(NULL));
+	return (BOOL)(rand() % 2);
 }
 
 QPoint AI::dir2p(QPoint H, direction v)

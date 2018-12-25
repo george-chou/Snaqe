@@ -21,7 +21,10 @@ private:
 	bool Border(QPoint);
 	QPoint safeRandStep(QPoint);
 	void dirArray(QPoint, QPoint, direction *);
+	BOOL randBOOL(void);
 	QPoint dir2p(QPoint, direction);
 	bool inArray(QPoint, QPoint *, int);
+	direction vDir(QPoint, QPoint);
+	QPoint noCircle(QPoint *, int);
 };
 
