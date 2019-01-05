@@ -1,6 +1,6 @@
 #ifndef GLUTTONOUS_H
 #define GLUTTONOUS_H
-#define INTERVAL 50
+#define INTERVAL 45
 
 #include <QtWidgets/QMainWindow>
 #include<QTimer> 

@@ -7,6 +7,7 @@
 #include<QKeyEvent> 
 #include "GLWidget.h"  
  
+//#include<time.h>
 
 GLWidget::GLWidget(QWidget *parent) :QOpenGLWidget(parent)
 { 
@@ -98,7 +99,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
 	else if (event->key() == Qt::Key_F1)
 	{
 		Auto = !Auto;
-		if (!Auto) v = curDir(H, QPoint(Sn[1].X_NOW, Sn[1].Y_NOW));
+		if (!Auto) v = curDir(H, Sn[1].NOW);	// QPoint(Sn[1].X_NOW, Sn[1].Y_NOW));
 		emit Mode(Auto);
 	}
 
@@ -106,12 +107,10 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
 	{
 		switch (event->key())
 		{
-
 		case Qt::Key_Left:  Left();  break;
 		case Qt::Key_Right: Right(); break;
 		case Qt::Key_Up:    Up();    break;
-		case Qt::Key_Down:  Down();  break;
-
+		case Qt::Key_Down:	Down();  break;
 		default: break;
 		}
 	}
@@ -135,7 +134,25 @@ void GLWidget::Start(void)
 
 void GLWidget::Update(void)
 { 
+	//clock_t start, finish;
+	//int totaltime;
+	//start = clock();
+
 	Auto ? H = af->amoveSnake(H, F) : gf->Direction(v);
+
+	//finish = clock();
+	//totaltime = finish - start;
+	//
+	//if (totaltime > 20)
+	//{
+	//	if (totaltime > 30)
+	//	{
+	//		if (totaltime > 40)
+	//		{
+	//			int a = 0;
+	//		} 
+	//	} 
+	//}
 
 	sf->SnakeMove(H); 
 	sf->Death();
@@ -145,25 +162,25 @@ void GLWidget::Update(void)
 
 void GLWidget::Right(void)
 {
-	bool RightPermitted = !((Sn[0].X_NOW + 1 == Sn[1].X_NOW) && (Sn[0].Y_NOW == Sn[1].Y_NOW));
+	bool RightPermitted = !((Sn[0].NOW.x() + 1 == Sn[1].NOW.x()) && (Sn[0].NOW.y() == Sn[1].NOW.y()));
 	if ((v != V_LEFT) && RightPermitted) v = V_RIGHT;
 }
 
 void GLWidget::Up(void)
 {
-	bool UpPermitted = !((Sn[0].X_NOW == Sn[1].X_NOW) && (Sn[0].Y_NOW + 1 == Sn[1].Y_NOW));
+	bool UpPermitted = !((Sn[0].NOW.x() == Sn[1].NOW.x()) && (Sn[0].NOW.y() + 1 == Sn[1].NOW.y()));
 	if ((v != V_DOWN) && UpPermitted) v = V_UP;
 }
 
 void GLWidget::Left(void)
 {
-	bool LeftPermitted = !((Sn[0].X_NOW - 1 == Sn[1].X_NOW) && (Sn[0].Y_NOW == Sn[1].Y_NOW));
+	bool LeftPermitted = !((Sn[0].NOW.x() - 1 == Sn[1].NOW.x()) && (Sn[0].NOW.y() == Sn[1].NOW.y()));
 	if ((v != V_RIGHT) && LeftPermitted) v = V_LEFT;
 }
 
 void GLWidget::Down(void)
 {
-	bool DownPermitted = !((Sn[0].X_NOW == Sn[1].X_NOW) && (Sn[0].Y_NOW - 1 == Sn[1].Y_NOW));
+	bool DownPermitted = !((Sn[0].NOW.x() == Sn[1].NOW.x()) && (Sn[0].NOW.y() - 1 == Sn[1].NOW.y()));
 	if ((v != V_UP) && DownPermitted) v = V_DOWN;
 }
 
@@ -267,8 +284,8 @@ void GLWidget::LinkBlocks(int i)
 	float h = 1.0f / N;
 	float d = 0.125 * h;
 
-	QPoint p0(Sn[i].X_NOW, Sn[i].Y_NOW);
-	QPoint p1(Sn[i + 1].X_NOW, Sn[i + 1].Y_NOW);
+	QPoint p0 = Sn[i].NOW;	// (Sn[i].X_NOW, Sn[i].Y_NOW);
+	QPoint p1 = Sn[i + 1].NOW;	// (Sn[i + 1].X_NOW, Sn[i + 1].Y_NOW);
 	direction v = curDir(p0, p1);  // p0 is on the v direction of p1
 
 	glBegin(GL_QUADS);
@@ -316,7 +333,7 @@ void GLWidget::DrawSnake(void)
 		if (i == 0) c = C_YELLOW;
 		if (i == L - 1) c = C_SKYBLUE;
 
-		DrawBlock(QPoint(Sn[i].X_NOW, Sn[i].Y_NOW), c);
+		DrawBlock(Sn[i].NOW, c);	// QPoint(Sn[i].X_NOW, Sn[i].Y_NOW), c);
 	}
 
 	for (i = 0; i <= L - 2; i++)
@@ -332,9 +349,9 @@ void GLWidget::DrawFood(void)
 
 void GLWidget::DrawCup(void)
 {
-	int i, j;
-
-	int cup[N][N] = {
+	int i, j; 
+	int cup[N_MAX][N_MAX] = 
+	{
 		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },	// 15
 		{ 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },	// 14
 		{ 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1 },	// 13
@@ -353,11 +370,23 @@ void GLWidget::DrawCup(void)
 		{ 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 }  // 0
 	};
 
+	int win[N][N] =
+	{
+		{ 1, 1, 1, 1, 1, 1, 1, 1 }, 
+		{ 1, 0, 1, 1, 1, 1, 0, 1 },
+		{ 1, 0, 1, 1, 1, 1, 0, 1 },
+		{ 0, 1, 1, 1, 1, 1, 1, 0 },
+		{ 0, 0, 1, 1, 1, 1, 0, 0 },
+		{ 0, 0, 0, 1, 1, 0, 0, 0 },
+		{ 0, 0, 0, 1, 1, 0, 0, 0 },
+		{ 0, 0, 1, 1, 1, 1, 0, 0 }
+	};
+
 	for (i = 0; i < N; i++)
 	{
 		for (j = 0; j < N; j++)
 		{
-			if (cup[i][j])
+			if (win[i][j])
 			{
 				DrawBlock(QPoint(j, N - i - 1), C_YELLOW);
 			}
@@ -368,7 +397,7 @@ void GLWidget::DrawCup(void)
 void GLWidget::DrawLose(void)
 {
 	int i, j;
-	int Lose[N][N] =
+	int Lose[N_MAX][N_MAX] =
 	{
 		{ 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },	// 15
 		{ 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },	// 14
@@ -388,17 +417,28 @@ void GLWidget::DrawLose(void)
 		{ 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 }  // 0
 	};
 
+	int Lose_8[N][N] = 
+	{
+		{ 1, 0, 0, 0, 0, 0, 0, 1 }, 
+		{ 0, 1, 0, 0, 0, 0, 1, 0 },
+		{ 0, 0, 1, 0, 0, 1, 0, 0 },
+		{ 0, 0, 0, 1, 1, 0, 0, 0 },
+		{ 0, 0, 0, 1, 1, 0, 0, 0 },
+		{ 0, 0, 1, 0, 0, 1, 0, 0 },
+		{ 0, 1, 0, 0, 0, 0, 1, 0 },
+		{ 1, 0, 0, 0, 0, 0, 0, 1 }
+	};
+
 	for (i = 0; i < N; i++)
 	{
 		for (j = 0; j < N; j++)
 		{
-			if (Lose[i][j])
+			if (Lose_8[i][j])
 			{
 				DrawBlock(QPoint(j, N - i - 1), C_PURPLE);
 			}
 		}
 	}
-
 }
 
 

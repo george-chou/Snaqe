@@ -20,12 +20,12 @@ bool game::MissionImpossible(int L)
 
 
 bool game::Covered(QPoint p)
-{ 
+{
 	bool cover = false;
 
 	for (int i = 0; i <= L - 1; i++)
 	{
-		if (Sn[i].X_NOW == p.x() && Sn[i].Y_NOW == p.y())
+		if (Sn[i].NOW == p)	// Sn[i].X_NOW == p.x() && Sn[i].Y_NOW == p.y())
 		{
 			cover = true;
 			break;

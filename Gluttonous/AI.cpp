@@ -2,6 +2,8 @@
 #include "AI.h"
 #include "astar.h"
 #include "time.h"
+ 
+#include "BFS.h"
 
 AI::AI()
 {
@@ -12,6 +14,13 @@ AI::~AI()
 {
 }
 
+bool AI::diag(QPoint p1, QPoint p2)
+{
+	int dx = (p1 - p2).x();
+	int dy = (p1 - p2).y();
+
+	return (Abs(dx) == 1) && (Abs(dy) == 1);
+}
 
 vector<vector<int>> AI::initMaze(body *Sn)
 {
@@ -33,10 +42,15 @@ vector<vector<int>> AI::initMaze(body *Sn)
 
 	for (i = 1; i < L; i++)    // involve tail while searching food
 	{
-		maze[Sn[i].X_NOW + 1][Sn[i].Y_NOW + 1] = 1;
+		maze[Sn[i].NOW.x() + 1][Sn[i].NOW.y() + 1] = 1;
 	}
 
 	return maze;
+}
+
+bool AI::Bound(QPoint p)
+{
+	return (0 > p.x() || p.x() > N - 1 || 0 > p.y() || p.y() > N - 1);
 }
 
 int AI::findPath(QPoint H, QPoint F, QPoint *pA)
@@ -49,62 +63,53 @@ int AI::findPath(QPoint H, QPoint F, QPoint *pA)
 	vector<vector<int>> maze = initMaze(Sn);
 	astar.InitAstar(maze);
 	list<Point *> path = astar.GetPath(start, end, false);
-
+	  
 	for (auto &p : path)
-	{
-
+	{ 
 		QPoint cp(p->x - 1, p->y - 1);
  
 		if (i > 0)
 		{
-			if (neighbor(cp, pA[i - 1]))
+			if (neighbor(cp, pA[i - 1])) 
 			{
 				*(pA + i) = cp;
 				i++;
 			}
-			else
+			else  if (diag(cp, pA[i - 1])) 
 			{
-				//(pA + i)->setX(pA[i - 1].x());
-				//(pA + i)->setY(cp.y());
-				*(pA + i) = noCircle(pA, i);
+				*(pA + i) = noCircle(pA, cp, i, FALSE);
 				*(pA + i + 1) = cp;
-				i += 2;
+
+				if (!neighbor(pA[i], pA[i + 1]))
+				{
+					bool ntl = true;
+				}
+
+				i += 2;   
+			}
+			else 
+			{
+				bool ntl = true;
 			}
 		}
-		else
+		else 
 		{
-			*(pA + i) = cp;
+			*pA = cp;
 			i++;
-		}
+		} 
 	}
-
+	 
 	return i;
 }
 
-QPoint AI::noCircle(QPoint pA[], int i)
-{
-	direction v = V_RIGHT;
 
-	if (i == 1)
-	{
-		QPoint neck(Sn[1].X_NOW, Sn[1].Y_NOW);
-		v = vDir(pA[i - 1], neck);
-	}
-	else //if (i > 1)
-	{
-		v = vDir(pA[i - 1], pA[i - 2]);
-	}
-
-	return dir2p(pA[i - 1], v);
-}
-
-direction AI::vDir(QPoint H, QPoint R)  // H is on the vDir of R
+direction  AI::vDir(QPoint H, QPoint R)  // H is on the vDir of R
 {
 	QPoint d = H - R;
 
 	if (d == QPoint(1, 0))
 	{
-		return V_RIGHT;
+		return  V_RIGHT;
 	}
 	else if (d == QPoint(-1, 0))
 	{
@@ -114,17 +119,23 @@ direction AI::vDir(QPoint H, QPoint R)  // H is on the vDir of R
 	{
 		return V_UP;
 	}
-	else
+	else if (d == QPoint(0, -1))
 	{
 		return V_DOWN;
 	}
-
+	else
+	{
+		return V_RIGHT;
+	}
 }
 
 
 bool AI::neighbor(QPoint p1, QPoint p2)
 {
-	return (Abs(p1.x() - p2.x()) + Abs(p1.y() - p2.y()) == 1);
+	int dx = (p1 - p2).x();
+	int dy = (p1 - p2).y();
+
+	return ((Abs(dx) + Abs(dy)) == 1);
 }
 
 bool AI::findTail(QPoint *s, int n)
@@ -189,9 +200,8 @@ bool AI::virtualSnake(QPoint *s, int n)
 			}
 
 			for (i = n; i <= L; i++)
-			{
-				p[i].setX(Sn[i - n + 1].X_NOW);
-				p[i].setY(Sn[i - n + 1].Y_NOW);
+			{ 
+				p[i] = Sn[i - n + 1].NOW;
 			}
 
 		}
@@ -205,10 +215,10 @@ bool AI::virtualSnake(QPoint *s, int n)
 }
 
 bool AI::Bit(QPoint p)
-{ 
+{
 	for (int i = 1; i < L - 1; i++)
 	{
-		if (Sn[i].X_NOW == p.x() && Sn[i].Y_NOW == p.y())
+		if (Sn[i].NOW == p)	// Sn[i].X_NOW == p.x() && Sn[i].Y_NOW == p.y())
 		{
 			return true;
 		}
@@ -219,56 +229,110 @@ bool AI::Bit(QPoint p)
 
 bool AI::Border(QPoint p)
 {
-	return (0 > p.x() || p.x() > N - 1 || 0 > p.y() || p.y() > N - 1);
+	return Bound(p) || (p == F);
 }
 
-QPoint AI::safeRandStep(QPoint H)
+int AI::bFilter(QPoint d[], QPoint *b)
 {
-	int i = 0;
-	int k = 0;
-	QPoint vH(0, 0);	
-	QPoint pV[4] = { QPoint(0, 0) };
-	QPoint pH[4] = { QPoint(0, 0) };
-	direction V[4] = { V_RIGHT };
+	int k = 0; 
 
-	dirArray(F, H, V);
-
-	for (i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
-		vH = dir2p(H, V[i]);
-		if (!Bit(vH) && !Border(vH))
+		if (!Bit(d[i]) && !Border(d[i]))
 		{
-			pV[k] = vH;
+			*(b + k) = d[i];
 			k++;
+			if (k > 2) break; 
 		}
 	}
 
-	if (k == 1)
-	{
-		return pV[0];
-	}
-	else //if (j > 1)
-	{ 
-		QPoint *p = (QPoint *)malloc(sizeof(QPoint)* L);
-
-		for (i = 1; i <= L - 1; i++)
-		{
-			p[i].setX(Sn[i - 1].X_NOW);
-			p[i].setY(Sn[i - 1].Y_NOW);
-		}
-
-		for (i = 0; i < k; i++)
-		{
-			p[0] = pV[i];
-			if (findTail(p, L - 1)) return p[0]; 
-		}
-
-		return departTail(pV, k);
-	}
-
+	return k;
 }
 
-void AI::dirArray(QPoint F, QPoint H, direction *v)
+bool AI::canFindTail(QPoint bp)
+{
+	QPoint *p = (QPoint *)malloc(sizeof(QPoint)* L);
+
+	for (int i = 1; i <= L - 1; i++)
+	{ 
+		p[i] = Sn[i - 1].NOW;
+	}
+	p[0] = bp;
+
+	return findTail(p, L - 1);
+}
+
+
+int AI::tFilter(QPoint b[], int n, QPoint *t)
+{ 
+	int k = 0;
+
+	for (int i = 0; i < n; i++)
+	{
+		if (canFindTail(b[i]))
+		{
+			*(t + k) = b[i];
+			k++;
+			if (k > 2) break;
+		}
+	}
+
+	return k;
+}
+ 
+QPoint AI::safeRandStep(QPoint H)	//, bool df)
+{ 
+	QPoint v[4] = { QPoint(0, 0) };
+	QPoint T = Sn[L - 1].NOW;	// (Sn[L - 1].X_NOW, Sn[L - 1].Y_NOW);
+
+	if (dirArray(T, H, v) != CENTER)	// df ? F : 
+	{
+		QPoint *b = (QPoint *)malloc(sizeof(QPoint)* 3);
+		int bn = bFilter(v, b);
+
+		if (bn == 1)
+		{
+			return b[0];
+		}
+		else if (bn > 1)
+		{
+
+			QPoint *t = (QPoint *)malloc(sizeof(QPoint)* bn);
+			int tn = tFilter(b, bn, t);
+
+			if (tn == 0)
+			{
+				return b[0];
+			}
+			else if (tn >= 1)
+			{ 
+				if (L > N * N / 2)
+				{
+					QPoint vH(0, 0);
+					BFS *bf = new BFS();
+					if (bf->createGraph(&vH)) return vH; 
+				}
+				return t[0];
+			}
+			else
+			{
+				return QPoint(-1, -1);
+			}
+
+		}
+		else
+		{
+			return QPoint(-1, -1);
+		}
+
+	}
+	else
+	{
+		return QPoint(-1, -1);
+	}
+}
+
+Towards AI::dirArray(QPoint F, QPoint H, QPoint *v)
 {
 	BOOL i = 0;
 	int x = (H - F).x();
@@ -276,129 +340,150 @@ void AI::dirArray(QPoint F, QPoint H, direction *v)
 
 	if (0 < y && y < x)
 	{
-		*(v + 0) = V_RIGHT;
-		*(v + 1) = V_UP;
-		*(v + 2) = V_DOWN;
-		*(v + 3) = V_LEFT; 
+		*(v + 0) = dir2p(H, V_RIGHT);
+		*(v + 1) = dir2p(H, V_UP);
+		*(v + 2) = dir2p(H, V_DOWN);
+		*(v + 3) = dir2p(H, V_LEFT);
+		return E2NE;
 	}
 	else if (0 < x && x < y)
 	{
-		*(v + 0) = V_UP;
-		*(v + 1) = V_RIGHT;
-		*(v + 2) = V_LEFT;
-		*(v + 3) = V_DOWN; 
+		*(v + 0) = dir2p(H, V_UP);
+		*(v + 1) = dir2p(H, V_RIGHT);
+		*(v + 2) = dir2p(H, V_LEFT);
+		*(v + 3) = dir2p(H, V_DOWN);
+		return NE2N;
 	}
 	else if (0 < -x && -x < y)
 	{
-		*(v + 0) = V_UP;
-		*(v + 1) = V_LEFT;
-		*(v + 2) = V_RIGHT;
-		*(v + 3) = V_DOWN; 
+		*(v + 0) = dir2p(H, V_UP);
+		*(v + 1) = dir2p(H, V_LEFT);
+		*(v + 2) = dir2p(H, V_RIGHT);
+		*(v + 3) = dir2p(H, V_DOWN);
+		return N2NW;
 	}
 	else if (0 < y && y < -x)
 	{
-		*(v + 0) = V_LEFT;
-		*(v + 1) = V_UP;
-		*(v + 2) = V_DOWN;
-		*(v + 3) = V_RIGHT; 
+		*(v + 0) = dir2p(H, V_LEFT);
+		*(v + 1) = dir2p(H, V_UP);
+		*(v + 2) = dir2p(H, V_DOWN);
+		*(v + 3) = dir2p(H, V_RIGHT);
+		return NW2W;
 	}
 	else if (x < y && y < 0)
 	{
-		*(v + 0) = V_LEFT;
-		*(v + 1) = V_DOWN;
-		*(v + 2) = V_UP;
-		*(v + 3) = V_RIGHT; 
+		*(v + 0) = dir2p(H, V_LEFT);
+		*(v + 1) = dir2p(H, V_DOWN);
+		*(v + 2) = dir2p(H, V_UP);
+		*(v + 3) = dir2p(H, V_RIGHT);
+		return W2SW;
 	}
 	else if (y < x && x < 0)
 	{
-		*(v + 0) = V_DOWN;
-		*(v + 1) = V_LEFT;
-		*(v + 2) = V_RIGHT;
-		*(v + 3) = V_UP; 
+		*(v + 0) = dir2p(H, V_DOWN);
+		*(v + 1) = dir2p(H, V_LEFT);
+		*(v + 2) = dir2p(H, V_RIGHT);
+		*(v + 3) = dir2p(H, V_UP);
+		return SW2S;
 	}
 	else if (y < -x && -x < 0)
 	{
-		*(v + 0) = V_DOWN;
-		*(v + 1) = V_RIGHT;
-		*(v + 2) = V_LEFT;
-		*(v + 3) = V_UP; 
+		*(v + 0) = dir2p(H, V_DOWN);
+		*(v + 1) = dir2p(H, V_RIGHT);
+		*(v + 2) = dir2p(H, V_LEFT);
+		*(v + 3) = dir2p(H, V_UP);
+		return S2SE;
 	}
 	else if (-x < y && y < 0)
 	{
-		*(v + 0) = V_RIGHT;
-		*(v + 1) = V_DOWN;
-		*(v + 2) = V_UP;
-		*(v + 3) = V_LEFT; 
+		*(v + 0) = dir2p(H, V_RIGHT);
+		*(v + 1) = dir2p(H, V_DOWN);
+		*(v + 2) = dir2p(H, V_UP);
+		*(v + 3) = dir2p(H, V_LEFT);
+		return SE2E;
 	}
 
 	else if (y == 0 && 0 < x)
 	{
 		i = randBOOL();
-		*(v + 0) = V_RIGHT;
-		*(v + 1 + i) = V_UP;
-		*(v + 1 + !i) = V_DOWN;
-		*(v + 3) = V_LEFT;
+		*(v + 0) = dir2p(H, V_RIGHT);
+		*(v + 1 + i) = dir2p(H, V_UP);
+		*(v + 1 + !i) = dir2p(H, V_DOWN);
+		*(v + 3) = dir2p(H, V_LEFT);
+		return EAST;
 	}
 	else if (y == x && x > 0)
 	{
 		i = randBOOL();
-		*(v + i) = V_RIGHT;
-		*(v + !i) = V_UP;
+		*(v + i) = dir2p(H, V_RIGHT);
+		*(v + !i) = dir2p(H, V_UP);
 		i = randBOOL();
-		*(v + 2 + i) = V_LEFT;
-		*(v + 2 + !i) = V_DOWN;
+		*(v + 2 + i) = dir2p(H, V_LEFT);
+		*(v + 2 + !i) = dir2p(H, V_DOWN);
+		return NE;
 	}
 	else if (y > 0 && 0 == x)
 	{
 		i = randBOOL();
-		*(v + 0) = V_UP;
-		*(v + 1 + i) = V_RIGHT;
-		*(v + 1 + !i) = V_LEFT;
-		*(v + 3) = V_DOWN;
+		*(v + 0) = dir2p(H, V_UP);
+		*(v + 1 + i) = dir2p(H, V_RIGHT);
+		*(v + 1 + !i) = dir2p(H, V_LEFT);
+		*(v + 3) = dir2p(H, V_DOWN);
+		return NORTH;
 	}
 	else if (0 < y && y == -x)
 	{
 		i = randBOOL();
-		*(v + i) = V_LEFT;
-		*(v + !i) = V_UP;
+		*(v + i) = dir2p(H, V_LEFT);
+		*(v + !i) = dir2p(H, V_UP);
 		i = randBOOL();
-		*(v + 2 + i) = V_RIGHT;
-		*(v + 2 + !i) = V_DOWN;
+		*(v + 2 + i) = dir2p(H, V_RIGHT);
+		*(v + 2 + !i) = dir2p(H, V_DOWN);
+		return NW;
 	}
 	else if (y == 0 && 0 > x)
 	{
 		i = randBOOL();
-		*(v + 0) = V_LEFT;
-		*(v + 1 + i) = V_UP;
-		*(v + 1 + !i) = V_DOWN;
-		*(v + 3) = V_RIGHT;
+		*(v + 0) = dir2p(H, V_LEFT);
+		*(v + 1 + i) = dir2p(H, V_UP);
+		*(v + 1 + !i) = dir2p(H, V_DOWN);
+		*(v + 3) = dir2p(H, V_RIGHT);
+		return WEST;
 	}
 	else if (y == x && x < 0)
 	{
 		i = randBOOL();
-		*(v + i) = V_LEFT;
-		*(v + !i) = V_DOWN;
+		*(v + i) = dir2p(H, V_LEFT);
+		*(v + !i) = dir2p(H, V_DOWN);
 		i = randBOOL();
-		*(v + 2 + i) = V_RIGHT;
-		*(v + 2 + !i) = V_UP;
+		*(v + 2 + i) = dir2p(H, V_RIGHT);
+		*(v + 2 + !i) = dir2p(H, V_UP);
+		return SW;
 	}
 	else if (x == 0 && 0 > y)
 	{
 		i = randBOOL();
-		*(v + 0) = V_DOWN;
-		*(v + 1 + i) = V_LEFT;
-		*(v + 1 + !i) = V_RIGHT;
-		*(v + 3) = V_UP;
+		*(v + 0) = dir2p(H, V_DOWN);
+		*(v + 1 + i) = dir2p(H, V_LEFT);
+		*(v + 1 + !i) = dir2p(H, V_RIGHT);
+		*(v + 3) = dir2p(H, V_UP);
+		return SOUTH;
 	}
-	else  // 0 > y = -x
+	else if (0 > y && y == -x)
 	{
 		i = randBOOL();
-		*(v + i) = V_RIGHT;
-		*(v + !i) = V_DOWN;
+		*(v + i) = dir2p(H, V_RIGHT);
+		*(v + !i) = dir2p(H, V_DOWN);
 		i = randBOOL();
-		*(v + 2 + i) = V_LEFT;
-		*(v + 2 + !i) = V_UP;
+		*(v + 2 + i) = dir2p(H, V_LEFT);
+		*(v + 2 + !i) = dir2p(H, V_UP);
+		return SE;
 	}
+	else  // impossible
+	{
+		return CENTER;
+	}
+
 }
 
 BOOL AI::randBOOL(void)
@@ -414,62 +499,225 @@ QPoint AI::dir2p(QPoint H, direction v)
 	case V_RIGHT:	return QPoint(H.x() + 1, H.y());
 	case V_LEFT:	return QPoint(H.x() - 1, H.y());
 	case V_UP:		return QPoint(H.x(), H.y() + 1);
-	default:		return QPoint(H.x(), H.y() - 1);
+	default:		return QPoint(H.x(), H.y() - 1); 
 	}
 }
 
-QPoint AI::departTail(QPoint *pH, int n)
+QPoint AI::compass(QPoint H, QPoint F)
 {
-	QPoint R(Sn[L - 1].X_NOW, Sn[L - 1].Y_NOW);
-	direction v[4] = { V_RIGHT };
-	dirArray(R, H, v);
+	int x = (F - H).x();
+	int y = (F - H).y();
 
-	for (int i = 0; i < 4; i++)
+	if (x > 0 && y > 0)
 	{
-		QPoint vH = dir2p(H, v[i]);
-		if (inArray(vH, pH, n))
-		{
-			R = vH;
-			break;
-		}
+		return QPoint(H.x() + 1, H.y() + 1);
+	}
+	else if (x > 0 && y < 0)
+	{
+		return  QPoint(H.x() + 1, H.y() - 1);
+	}
+	else if (x < 0 && y > 0)
+	{
+		return QPoint(H.x() - 1, H.y() + 1);
+	}
+	else if (x < 0 && y < 0)
+	{
+		return QPoint(H.x() - 1, H.y() - 1);
+	}
+	else
+	{
+		return H;
 	}
 
-	return R;
 }
 
-bool AI::inArray(QPoint e, QPoint *s, int n)
+bool AI::boundFood(QPoint F)
 {
-	for (int i = 0; i < n; i++)
-	{
-		if (e == s[i])
-		{
-			return true;
-		}
-	}
-	return false;
+	return Bound(dir2p(F, V_RIGHT)) || Bound(dir2p(F, V_LEFT)) || Bound(dir2p(F, V_UP)) || Bound(dir2p(F, V_DOWN));
 }
 
-QPoint AI::amoveSnake(QPoint H, QPoint F)
-{ 
 
-	QPoint *pn = (QPoint *)malloc(sizeof(QPoint)* (N * N - 2));
-	memset(pn, 0, sizeof(pn));
-	int pathLength = findPath(H, F, &pn[0]);
+QPoint AI::noCircle(QPoint pA[], QPoint cp, int i, BOOL vNeck) 
+{
 
-	if (pathLength > 0)
+	QPoint neck = (i == 1) ? Sn[1 - vNeck].NOW : pA[i - 2];
+	 
+	direction v = vDir(pA[i - 1], neck);
+	QPoint pi = dir2p(pA[i - 1], v);
+
+	if (neighbor(cp, pi))
 	{
-		if (virtualSnake(pn, pathLength))
+		return pi;
+	}
+	else
+	{
+		QPoint pi1(cp.x(), pA[i - 1].y());
+		QPoint pi2(pA[i - 1].x(), cp.y());
+		return (neck != pi1) ? pi1 : pi2;
+	}
+
+}
+
+int AI::canVeer(QPoint vH, QPoint F, QPoint *pB)
+{
+	int i = 0;
+	Astar astar; 
+
+	Point start(vH.x() + 1, vH.y() + 1);
+	Point end(F.x() + 1, F.y() + 1);
+
+	vector<vector<int>> maze = initMaze(Sn); 
+	maze[H.x() + 1][H.y() + 1] = 1;
+	maze[Sn[L - 1].NOW.x() + 1][Sn[L - 1].NOW.y() + 1] = 0;
+
+	astar.InitAstar(maze);
+	list<Point *> path = astar.GetPath(start, end, false);
+
+	*pB = H;
+	QPoint *pA = pB + 1;
+
+	for (auto &p : path)
+	{
+		QPoint cp(p->x - 1, p->y - 1);
+
+		if (i > 0)
 		{
-			return pn[1];
+			if (neighbor(cp, pA[i - 1]))
+			{
+				*(pA + i) = cp; 
+				i++;
+			}
+			else  if (diag(cp, pA[i - 1]))
+			{
+				*(pA + i) = noCircle(pA, cp, i, TRUE);
+				*(pA + i + 1) = cp;
+
+				if (!neighbor(pA[i], pA[i + 1]))
+				{
+					bool ntl = true;
+				}
+
+				i += 2;
+			}
+			else
+			{
+				bool ntl = true;
+			}
 		}
 		else
 		{
-			return safeRandStep(H);
+			*pA = cp;
+			i++;
+		}
+	}
+
+	return i;
+}
+
+bool AI::mayEndlessLoop(body *Sn, QPoint *p)
+{
+	QPoint H = Sn[0].NOW;
+	QPoint neck = Sn[1].NOW;	// (Sn[1].X_NOW, Sn[1].Y_NOW);
+	direction v = vDir(H, neck);
+	QPoint pi = dir2p(H, v);
+	*p = pi;
+
+	return Bound(dir2p(F, v)) && Bound(dir2p(pi, v)) && !Bound(pi) && pi != F && !Bit(pi);
+}
+
+QPoint AI::avoidLoop(QPoint pi)
+{
+	QPoint pV = compass(H, F);
+	if (!Bit(H + pV - pi))
+	{
+		QPoint *pa = new QPoint[N * N - 2];
+		int pLength = canVeer(pi, F, &pa[0]);
+		if (pLength > 1)
+		{
+			if (virtualSnake(pa, pLength + 1))
+			{
+				return pi;
+			}
+			else
+			{
+				pLength = canVeer(H + pV - pi, F, &pa[0]);
+				if (pLength > 1)
+				{
+					return virtualSnake(pa, pLength + 1) ? (H + pV - pi) : pi;
+				}
+				else
+				{
+					return pi;
+				}
+			}
+		}
+		else
+		{
+			return (H + pV - pi);
 		}
 	}
 	else
 	{
-		return safeRandStep(H);
+		return pi;
+	}
+}
+
+bool AI::tryfillMode(int L)
+{
+	if (L < N * (N - 2)) return false;
+	if (!canFindTail(H)) return false;
+
+	QPoint H = Sn[0].NOW;
+	QPoint neck = Sn[1].NOW; 
+	direction forward = vDir(H, neck);
+	QPoint pH = dir2p(H, forward);
+
+	if (Bit(pH) || Bound(pH)) return false; 
+
+	QPoint turnLeft(0,0);
+	QPoint turnRight(0, 0);
+
+	switch (forward)
+	{
+	case V_RIGHT: 
+	case V_LEFT:
+		turnLeft = dir2p(H, V_UP);
+		turnRight = dir2p(H, V_DOWN);
+		return (!Bit(turnLeft) && !Bound(turnLeft)) || (!Bit(turnRight) && !Bound(turnRight));
+
+	default:
+		turnLeft = dir2p(H, V_RIGHT);
+		turnRight = dir2p(H, V_LEFT);
+		return (!Bit(turnLeft) && !Bound(turnLeft)) || (!Bit(turnRight) && !Bound(turnRight)); 
 	} 
-	 
+}
+
+QPoint AI::amoveSnake(QPoint H, QPoint F)
+{
+	if (tryfillMode(L))
+	{
+		QPoint vH(0, 0);
+		BFS *bf = new BFS();
+		if (bf->createGraph(&vH)) return vH;
+	}
+
+	QPoint *pn = new QPoint[N * N - 2];
+	int pLength = findPath(H, F, &pn[0]);
+	if (pLength > 0)
+	{
+		QPoint pi(0, 0);
+		if (mayEndlessLoop(Sn, &pi))
+		{
+			return avoidLoop(pi);
+		}
+		else
+		{
+			return virtualSnake(pn, pLength) ? pn[1] : safeRandStep(H);
+		} 
+	}
+	else
+	{
+		return safeRandStep(H);
+	}
+
 }

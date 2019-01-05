@@ -84,6 +84,7 @@
   <ItemGroup>
     <ClCompile Include="AI.cpp" />
     <ClCompile Include="astar.cpp" />
+    <ClCompile Include="BFS.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_gluttonous.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -99,6 +100,7 @@
     </ClCompile>
     <ClCompile Include="gluttonous.cpp" />
     <ClCompile Include="GLWidget.cpp" />
+    <ClCompile Include="Hamilton.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="snake.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -210,6 +212,10 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources\Icon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BFS.h" />
+    <ClInclude Include="Hamilton.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
