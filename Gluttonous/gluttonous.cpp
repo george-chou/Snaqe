@@ -16,8 +16,7 @@ Gluttonous::~Gluttonous()
 
 void Gluttonous::setupUi(QMainWindow *greedyClass)
 {
-	if (greedyClass->objectName().isEmpty())
-		greedyClass->setObjectName(QStringLiteral("greedyClass"));
+	if (greedyClass->objectName().isEmpty()) greedyClass->setObjectName(QStringLiteral("greedyClass"));
 	greedyClass->setFixedSize(512, 615);
 	greedyClass->setLocale(QLocale(QLocale::English, QLocale::UnitedStates));
 
@@ -77,7 +76,8 @@ void Gluttonous::setupUi(QMainWindow *greedyClass)
 	AutoLabel->setTextFormat(Qt::AutoText);
 
 	greedyClass->setCentralWidget(centralWidget);
-	 
+
+	INTERVAL = INTERVAL_MANUAL;
 	LastTime = 0;
 	refresh = new QTimer; 
 
@@ -163,18 +163,22 @@ void Gluttonous::GamePause()
 
 void Gluttonous::Win()
 {
-	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to play again", 0));  // Congratulations! 
+	MessageLabel->setText(QApplication::translate("greedyClass", "Press [Space] to play again.", 0));  // Congratulations! 
 }
 
 void Gluttonous::ModeChange(bool Auto)
 {
 	if (Auto)
 	{
+		INTERVAL = INTERVAL_AUTO;
 		AutoLabel->setText(QApplication::translate("greedyClass", "Press [F1] to enter MANUAL mode.", 0));
 	}
 	else
 	{
+		INTERVAL = INTERVAL_MANUAL;
 		AutoLabel->setText(QApplication::translate("greedyClass", "Press [F1] to enter AI mode.", 0));
 	} 
+
+	refresh->setInterval(INTERVAL);
 
 }

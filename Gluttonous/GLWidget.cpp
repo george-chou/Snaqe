@@ -20,7 +20,7 @@ GLWidget::GLWidget(QWidget *parent) :QOpenGLWidget(parent)
 
 void GLWidget::initializeGL()
 {	
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	setFocusPolicy(Qt::StrongFocus);
 }
 
@@ -103,7 +103,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
 		emit Mode(Auto);
 	}
 
-	if (!Pause && !Auto)
+	if (!Auto)	//	!Pause && 
 	{
 		switch (event->key())
 		{

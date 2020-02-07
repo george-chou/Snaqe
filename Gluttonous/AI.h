@@ -46,7 +46,7 @@ private:
 	QPoint dir2p(QPoint, direction);
 	bool boundFood(QPoint);
 	direction vDir(QPoint, QPoint);
-	QPoint noCircle(QPoint *, QPoint, int, BOOL);
+	QPoint noBend(QPoint *, QPoint, int, BOOL);
 	bool  diag(QPoint, QPoint);
 
 	int bFilter(QPoint *, QPoint *);

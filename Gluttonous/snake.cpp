@@ -65,7 +65,7 @@ void snake::Death(void)
 		bool Bitten = false;
 		for (int i = 4; i <= L - 1; i++)
 		{
-			if (Sn[0].NOW == Sn[1].NOW)	// Sn[0].X_NOW == Sn[i].X_NOW && Sn[0].Y_NOW == Sn[i].Y_NOW)
+			if (Sn[0].NOW == Sn[i].NOW)	// Sn[0].X_NOW == Sn[i].X_NOW && Sn[0].Y_NOW == Sn[i].Y_NOW)
 			{
 				Bitten = true;
 				break;

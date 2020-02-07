@@ -1,6 +1,7 @@
 #ifndef GLUTTONOUS_H
 #define GLUTTONOUS_H
-#define INTERVAL 45
+#define INTERVAL_AUTO 60
+#define INTERVAL_MANUAL 180
 
 #include <QtWidgets/QMainWindow>
 #include<QTimer> 
@@ -22,6 +23,8 @@ public:
 	QLabel *MessageLabel;
 	QLabel *AutoLabel;
 	QTimer *refresh;
+
+	int INTERVAL;
 
 private: 
 	void setupUi(QMainWindow *);

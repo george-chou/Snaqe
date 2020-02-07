@@ -77,20 +77,20 @@ int AI::findPath(QPoint H, QPoint F, QPoint *pA)
 			}
 			else  if (diag(cp, pA[i - 1])) 
 			{
-				*(pA + i) = noCircle(pA, cp, i, FALSE);
+				*(pA + i) = noBend(pA, cp, i, FALSE);
 				*(pA + i + 1) = cp;
 
-				if (!neighbor(pA[i], pA[i + 1]))
-				{
-					bool ntl = true;
-				}
+				//if (!neighbor(pA[i], pA[i + 1]))
+				//{
+				//	bool ntl = true;
+				//}
 
 				i += 2;   
 			}
-			else 
-			{
-				bool ntl = true;
-			}
+			//else 
+			//{
+			//	bool ntl = true;
+			//}
 		}
 		else 
 		{
@@ -177,7 +177,7 @@ bool AI::findTail(QPoint *s, int n)
 	return (i > 0);
 }
 
-bool AI::virtualSnake(QPoint *s, int n)
+bool AI::virtualSnake(QPoint *s, int n)	//	放一条虚拟蛇去吃食物并预测吃到后能否找到尾巴
 { 
 	if (n > 0)
 	{
@@ -218,10 +218,7 @@ bool AI::Bit(QPoint p)
 {
 	for (int i = 1; i < L - 1; i++)
 	{
-		if (Sn[i].NOW == p)	// Sn[i].X_NOW == p.x() && Sn[i].Y_NOW == p.y())
-		{
-			return true;
-		}
+		if (Sn[i].NOW == p) return true;
 	}
 
 	return false;
@@ -232,7 +229,7 @@ bool AI::Border(QPoint p)
 	return Bound(p) || (p == F);
 }
 
-int AI::bFilter(QPoint d[], QPoint *b)
+int AI::bFilter(QPoint d[], QPoint *b)	// 筛选掉因触碰边界或咬到自身的方向选项
 {
 	int k = 0; 
 
@@ -249,7 +246,7 @@ int AI::bFilter(QPoint d[], QPoint *b)
 	return k;
 }
 
-bool AI::canFindTail(QPoint bp)
+bool AI::canFindTail(QPoint bp)	//	判断蛇走到该点时还能否找得到尾巴
 {
 	QPoint *p = (QPoint *)malloc(sizeof(QPoint)* L);
 
@@ -263,7 +260,7 @@ bool AI::canFindTail(QPoint bp)
 }
 
 
-int AI::tFilter(QPoint b[], int n, QPoint *t)
+int AI::tFilter(QPoint b[], int n, QPoint *t)	//	筛选掉走后找不到尾巴的方向选项
 { 
 	int k = 0;
 
@@ -280,12 +277,12 @@ int AI::tFilter(QPoint b[], int n, QPoint *t)
 	return k;
 }
  
-QPoint AI::safeRandStep(QPoint H)	//, bool df)
+QPoint AI::safeRandStep(QPoint H)	//	寻找安全随机步，这里很关键，尤其是对找不到安全随机步时的决策
 { 
 	QPoint v[4] = { QPoint(0, 0) };
-	QPoint T = Sn[L - 1].NOW;	// (Sn[L - 1].X_NOW, Sn[L - 1].Y_NOW);
+	QPoint T = Sn[L - 1].NOW;
 
-	if (dirArray(T, H, v) != CENTER)	// df ? F : 
+	if (dirArray(T, H, v) != CENTER) 
 	{
 		QPoint *b = (QPoint *)malloc(sizeof(QPoint)* 3);
 		int bn = bFilter(v, b);
@@ -332,7 +329,7 @@ QPoint AI::safeRandStep(QPoint H)	//, bool df)
 	}
 }
 
-Towards AI::dirArray(QPoint F, QPoint H, QPoint *v)
+Towards AI::dirArray(QPoint F, QPoint H, QPoint *v)	//	获取远离食物的方向
 {
 	BOOL i = 0;
 	int x = (H - F).x();
@@ -492,7 +489,7 @@ BOOL AI::randBOOL(void)
 	return (BOOL)(rand() % 2);
 }
 
-QPoint AI::dir2p(QPoint H, direction v)
+QPoint AI::dir2p(QPoint H, direction v)	//	已知蛇头及朝向预测下一步蛇头位置
 {
 	switch (v)
 	{
@@ -537,7 +534,7 @@ bool AI::boundFood(QPoint F)
 }
 
 
-QPoint AI::noCircle(QPoint pA[], QPoint cp, int i, BOOL vNeck) 
+QPoint AI::noBend(QPoint pA[], QPoint cp, int i, BOOL vNeck) 
 {
 
 	QPoint neck = (i == 1) ? Sn[1 - vNeck].NOW : pA[i - 2];
@@ -589,20 +586,20 @@ int AI::canVeer(QPoint vH, QPoint F, QPoint *pB)
 			}
 			else  if (diag(cp, pA[i - 1]))
 			{
-				*(pA + i) = noCircle(pA, cp, i, TRUE);
+				*(pA + i) = noBend(pA, cp, i, TRUE);
 				*(pA + i + 1) = cp;
 
-				if (!neighbor(pA[i], pA[i + 1]))
-				{
-					bool ntl = true;
-				}
+				//if (!neighbor(pA[i], pA[i + 1]))
+				//{
+				//	bool ntl = true;
+				//}
 
 				i += 2;
 			}
-			else
-			{
-				bool ntl = true;
-			}
+			//else
+			//{
+			//	bool ntl = true;
+			//}
 		}
 		else
 		{
@@ -614,10 +611,10 @@ int AI::canVeer(QPoint vH, QPoint F, QPoint *pB)
 	return i;
 }
 
-bool AI::mayEndlessLoop(body *Sn, QPoint *p)
+bool AI::mayEndlessLoop(body *Sn, QPoint *p)	//	判断是否可能出现绕边界死循环情形
 {
 	QPoint H = Sn[0].NOW;
-	QPoint neck = Sn[1].NOW;	// (Sn[1].X_NOW, Sn[1].Y_NOW);
+	QPoint neck = Sn[1].NOW;
 	direction v = vDir(H, neck);
 	QPoint pi = dir2p(H, v);
 	*p = pi;
@@ -625,7 +622,7 @@ bool AI::mayEndlessLoop(body *Sn, QPoint *p)
 	return Bound(dir2p(F, v)) && Bound(dir2p(pi, v)) && !Bound(pi) && pi != F && !Bit(pi);
 }
 
-QPoint AI::avoidLoop(QPoint pi)
+QPoint AI::avoidLoop(QPoint pi)	//	避免绕边界死循环的决策函数
 {
 	QPoint pV = compass(H, F);
 	if (!Bit(H + pV - pi))
@@ -662,24 +659,24 @@ QPoint AI::avoidLoop(QPoint pi)
 	}
 }
 
-bool AI::tryfillMode(int L)
+bool AI::tryfillMode(int L)	//	判断是否进入哈密顿路径模式
 {
 	if (L < N * (N - 2)) return false;
 	if (!canFindTail(H)) return false;
 
 	QPoint H = Sn[0].NOW;
-	QPoint neck = Sn[1].NOW; 
+	QPoint neck = Sn[1].NOW;
 	direction forward = vDir(H, neck);
 	QPoint pH = dir2p(H, forward);
 
-	if (Bit(pH) || Bound(pH)) return false; 
+	if (Bit(pH) || Bound(pH)) return false;
 
-	QPoint turnLeft(0,0);
+	QPoint turnLeft(0, 0);
 	QPoint turnRight(0, 0);
 
 	switch (forward)
 	{
-	case V_RIGHT: 
+	case V_RIGHT:
 	case V_LEFT:
 		turnLeft = dir2p(H, V_UP);
 		turnRight = dir2p(H, V_DOWN);
@@ -688,22 +685,22 @@ bool AI::tryfillMode(int L)
 	default:
 		turnLeft = dir2p(H, V_RIGHT);
 		turnRight = dir2p(H, V_LEFT);
-		return (!Bit(turnLeft) && !Bound(turnLeft)) || (!Bit(turnRight) && !Bound(turnRight)); 
-	} 
+		return (!Bit(turnLeft) && !Bound(turnLeft)) || (!Bit(turnRight) && !Bound(turnRight));
+	}
 }
 
 QPoint AI::amoveSnake(QPoint H, QPoint F)
 {
-	if (tryfillMode(L))
+	if (tryfillMode(L))	//	如果蛇长该进入哈密顿通路模式
 	{
 		QPoint vH(0, 0);
 		BFS *bf = new BFS();
-		if (bf->createGraph(&vH)) return vH;
+		if (bf->createGraph(&vH)) return vH;	//	如果存在哈密顿通路则返回哈密顿通路的下一步
 	}
 
 	QPoint *pn = new QPoint[N * N - 2];
-	int pLength = findPath(H, F, &pn[0]);
-	if (pLength > 0)
+	int pLength = findPath(H, F, &pn[0]);	//	寻找吃食物的路径
+	if (pLength > 0)	//	如果找得到吃食物的路径
 	{
 		QPoint pi(0, 0);
 		if (mayEndlessLoop(Sn, &pi))
@@ -712,12 +709,12 @@ QPoint AI::amoveSnake(QPoint H, QPoint F)
 		}
 		else
 		{
-			return virtualSnake(pn, pLength) ? pn[1] : safeRandStep(H);
+			return virtualSnake(pn, pLength) ? pn[1] : safeRandStep(H);	//	如果进不到绕边界死循环情形，则能吃食物就吃，不能就走安全随即步
 		} 
 	}
 	else
 	{
-		return safeRandStep(H);
+		return safeRandStep(H);	//	如果找不到吃食物的通路则走一步安全的随机步
 	}
 
 }
