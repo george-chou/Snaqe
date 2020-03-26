@@ -1,18 +1,18 @@
 Snaqe
 ===============
 
-[![license](https://img.shields.io/github/license/zigzagbob/Snaqe.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
-[![AppVeyor](https://img.shields.io/appveyor/ci/zigzagbob/Snaqe.svg)](https://ci.appveyor.com/project/zigzagbob/Snaqe)
-[![Github All Releases](https://img.shields.io/github/downloads/zigzagbob/Snaqe/total.svg)](https://github.com/zigzagbob/Snaqe/releases)
-[![GitHub release](https://img.shields.io/github/release/zigzagbob/Snaqe.svg)](https://github.com/zigzagbob/Snaqe/releases/latest)
+[![license](https://img.shields.io/github/license/george-chou/Snaqe.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![AppVeyor](https://img.shields.io/appveyor/ci/george-chou/Snaqe.svg)](https://ci.appveyor.com/project/george-chou/Snaqe)
+[![Github All Releases](https://img.shields.io/github/downloads/george-chou/Snaqe/total.svg)](https://github.com/george-chou/Snaqe/releases)
+[![GitHub release](https://img.shields.io/github/release/george-chou/Snaqe.svg)](https://github.com/george-chou/Snaqe/releases/latest)
 
 Classic game Gluttonous Snake with AI based on `A*` algorithm in Qt version, how about calling it Snaqe?
 
-![LE interface](https://github.com/zigzagbob/Snaqe/raw/master/cover/SnakeAI.gif)  
+![LE interface](https://github.com/george-chou/Snaqe/raw/master/cover/SnakeAI.gif)  
 
 # Download #
 
-Download available at <https://github.com/zigzagbob/Snaqe/releases>.
+Download available at <https://github.com/george-chou/Snaqe/releases>.
 
 # Build #
 
