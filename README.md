@@ -8,7 +8,7 @@ Snaqe
 
 Classic game Gluttonous Snake with AI based on `A*` algorithm in Qt version, how about calling it Snaqe?
 
-![LE interface](https://github.com/george-chou/Snaqe/raw/master/cover/SnakeAI.gif)  
+![LE interface](https://george-chou.github.io/covers/Snaqe/SnakeAI.gif)  
 
 # Download #
 
