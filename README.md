@@ -1,6 +1,8 @@
 Snaqe
 ===============
 
+QSnake
+
 [![license](https://img.shields.io/github/license/george-chou/Snaqe.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 [![AppVeyor](https://img.shields.io/appveyor/ci/george-chou/Snaqe.svg)](https://ci.appveyor.com/project/george-chou/Snaqe)
 [![Github All Releases](https://img.shields.io/github/downloads-pre/george-chou/Snaqe/v2.1/total)](https://github.com/george-chou/Snaqe/releases)
